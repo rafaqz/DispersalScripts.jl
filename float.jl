@@ -13,12 +13,5 @@ model = Models(suitability_growth)
 model = Models(popdisp)
 model = Models(popdisp, suitability_growth)
 
-output = GtkOutput(init)
+output = GtkOutput(init, fps=200)
 sim!(output, model, init, layers; time=1000)
-
-savegif("float.gif", output)
-
-o = output
-Cellular.process_image(o, Cellular.scale_frame(o[1]))
-using Cellular: process_image, scale_frame
-cat(process_image.((o,), scale_frame.(o))..., dims=3)

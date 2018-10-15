@@ -1,5 +1,7 @@
 
-savegif("float_pop.gif", output)
+output = GtkOutput(init, fps=100, store=true)
+sim!(output, model, init, layers; time=1000)
+savegif("output.gif", output)
 
 using PerceptualColourMaps, Images
 map = applycolourmap(output.frames[1].data, cmap("L4"))
