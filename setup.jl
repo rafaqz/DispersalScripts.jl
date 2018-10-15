@@ -1,3 +1,5 @@
+# Load packages and raster files
+
 using Revise
 using Cellular
 using Dispersal
@@ -36,6 +38,7 @@ import Dispersal: pressure
 suit = growth_monthly[1] 
 suitlay = SuitabilityLayer(growth_monthly[1])
 suitseq = SuitabilitySequence((growth_monthly...,), 30);
+
 layers = suitseq
 
 init = zeros(Int64, size(growth))

@@ -1,3 +1,5 @@
+# Run models on binary 1/0 arrays
+
 include("setup.jl")
 
 init = zeros(Int64, size(growth))

@@ -1,3 +1,4 @@
+
 savegif("float_pop.gif", output)
 
 using PerceptualColourMaps, Images

@@ -1,5 +1,7 @@
-Blink.AtomShell.@dot output.window webContents.setZoomFactor(1.2)
+# Choose an output
+
 output = Cellular.BlinkOutput(init, model, layers)
+# Blink.AtomShell.@dot output.window webContents.setZoomFactor(1.2)
 # opentools(output.window)
 
 output = Cellular.MuxServer(init, model; port=8000)

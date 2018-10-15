@@ -1,3 +1,5 @@
+# Precalculate and run the human dispersal model
+
 include("setup.jl")
 
 world = readtiff(joinpath(path, "population_density.tif"))

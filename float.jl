@@ -1,3 +1,5 @@
+# Run models with floating point arrays - ie for population
+
 include("setup.jl")
 
 minmaxrange = 0.0, 10000.0
@@ -13,3 +15,10 @@ model = Models(popdisp, suitability_growth)
 
 output = GtkOutput(init)
 sim!(output, model, init, layers; time=1000)
+
+savegif("float.gif", output)
+
+o = output
+Cellular.process_image(o, Cellular.scale_frame(o[1]))
+using Cellular: process_image, scale_frame
+cat(process_image.((o,), scale_frame.(o))..., dims=3)
