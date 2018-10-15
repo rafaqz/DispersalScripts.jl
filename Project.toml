@@ -1,0 +1,4 @@
+[deps]
+Cellular = "a5dba43e-3abc-5203-bfc5-584ca68d3f5b"
+Dispersal = "72d8b834-28c9-57fc-8b6a-b9450a04c193"
+REPLGamesBase = "061b77f0-9d53-11e8-11f4-7df760718934"
