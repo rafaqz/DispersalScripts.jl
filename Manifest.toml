@@ -27,9 +27,9 @@ version = "0.8.10"
 
 [[BinaryProvider]]
 deps = ["Libdl", "Pkg", "SHA", "Test"]
-git-tree-sha1 = "38be61810f280c3c478f5c38aaf387f8f9199275"
+git-tree-sha1 = "9930c1a6cd49d9fcd7218df6be417e6ae4f1468a"
 uuid = "b99e7846-7c00-51b0-8f62-c81ae34c0232"
-version = "0.5.1"
+version = "0.5.2"
 
 [[BufferedStreams]]
 deps = ["Compat", "Pkg", "Test"]
@@ -51,7 +51,7 @@ version = "0.2.0"
 
 [[Cellular]]
 deps = ["Cairo", "Colors", "DocStringExtensions", "FieldMetadata", "FileIO", "FixedPointNumbers", "Flatten", "Graphics", "Gtk", "Images", "Mixers", "Parameters", "REPLGamesBase", "Requires", "Test", "UnicodeGraphics"]
-git-tree-sha1 = "c51420151dcaacaba098ae9df88348d3d6042a80"
+git-tree-sha1 = "ee5b928ec70db92299ead313cb3d5fa2cf411501"
 repo-rev = "master"
 repo-url = "https://github.com/rafaqz/Cellular.jl"
 uuid = "a5dba43e-3abc-5203-bfc5-584ca68d3f5b"
@@ -127,7 +127,7 @@ uuid = "8bb1440f-4735-579b-a4ab-409b98df4dab"
 
 [[Dispersal]]
 deps = ["Cellular", "DocStringExtensions", "FieldMetadata", "Flatten", "Mixers", "Parameters", "Profile", "Requires", "StaticArrays", "Test"]
-git-tree-sha1 = "bbc6f5192bd13350e2c977f8a8701f76338e9643"
+git-tree-sha1 = "fcf2208f0330ca10036a8ba3921d1cbc24f661c1"
 repo-rev = "master"
 repo-url = "https://github.com/rafaqz/Dispersal.jl"
 uuid = "72d8b834-28c9-57fc-8b6a-b9450a04c193"
