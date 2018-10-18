@@ -265,9 +265,9 @@ version = "0.6.0"
 
 [[Images]]
 deps = ["AxisArrays", "Base64", "ColorTypes", "ColorVectorSpace", "Colors", "FileIO", "FixedPointNumbers", "Graphics", "ImageAxes", "ImageCore", "ImageDistances", "ImageFiltering", "ImageMetadata", "ImageMorphology", "ImageShow", "ImageTransformations", "IndirectArrays", "InteractiveUtils", "LinearAlgebra", "MappedArrays", "OffsetArrays", "Pkg", "Random", "Reexport", "SIUnits", "SparseArrays", "StaticArrays", "Statistics", "StatsBase", "Test", "TiledIteration"]
-git-tree-sha1 = "73e21f66a8968d52ccf93b9c9c6a46e652d33d4e"
+git-tree-sha1 = "6ccb98fb6d93ade0ddd3954877955f17c2041a66"
 uuid = "916415d5-f1e6-5110-898d-aaa5f9f070e0"
-version = "0.16.0"
+version = "0.16.1"
 
 [[IndirectArrays]]
 deps = ["Compat", "Pkg", "Test"]
