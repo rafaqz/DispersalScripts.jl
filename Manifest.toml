@@ -81,6 +81,12 @@ repo-url = "https://github.com/rafaqz/Cellular.jl"
 uuid = "a5dba43e-3abc-5203-bfc5-584ca68d3f5b"
 version = "0.0.0"
 
+[[CodecZlib]]
+deps = ["BinaryProvider", "Libdl", "Test", "TranscodingStreams"]
+git-tree-sha1 = "e3df104c84dfc108f0ca203fd7f5bbdc98641ae9"
+uuid = "944b1d66-785c-5afd-91f1-9de20f533193"
+version = "0.5.1"
+
 [[ColorTypes]]
 deps = ["FixedPointNumbers", "Random", "Test"]
 git-tree-sha1 = "f73b0e10f2a5756de7019818a41654686da06b09"
@@ -157,7 +163,7 @@ uuid = "8bb1440f-4735-579b-a4ab-409b98df4dab"
 
 [[Dispersal]]
 deps = ["Cellular", "DocStringExtensions", "FieldMetadata", "Flatten", "Mixers", "Parameters", "Random", "Requires", "Test"]
-git-tree-sha1 = "a529ad2ae625cba483bc8be4b41adad7a21a46a7"
+git-tree-sha1 = "af9962292cfddfa46f48abb123bd29776a678856"
 repo-rev = "master"
 repo-url = "https://github.com/rafaqz/Dispersal.jl"
 uuid = "72d8b834-28c9-57fc-8b6a-b9450a04c193"
@@ -383,6 +389,12 @@ deps = ["SparseArrays", "Test"]
 git-tree-sha1 = "79246285c43602384e6f1943b3554042a3712056"
 uuid = "c8e1da08-722c-5040-9ed9-7db0dc04731e"
 version = "1.1.1"
+
+[[JLD2]]
+deps = ["CodecZlib", "DataStructures", "FileIO", "LinearAlgebra", "Mmap", "Printf", "Random", "Test"]
+git-tree-sha1 = "3ba90ff93e1d5b9b2103588051c2d349fae54dac"
+uuid = "033835bb-8acc-5ee8-8aae-3f567f8a3819"
+version = "0.1.2"
 
 [[JSExpr]]
 deps = ["JSON", "MacroTools", "Observables", "Test", "WebIO"]
@@ -686,6 +698,12 @@ deps = ["OffsetArrays", "Test"]
 git-tree-sha1 = "58f6f07d3b54a363ec283a8f5fc9fb4ecebde656"
 uuid = "06e1c1a7-607b-532d-9fad-de7d9aa2abac"
 version = "0.2.3"
+
+[[TranscodingStreams]]
+deps = ["Pkg", "Random", "Test"]
+git-tree-sha1 = "a34a2d588e2d2825602bf14a24216d5c8b0921ec"
+uuid = "3bb67fe8-82b1-5028-8e26-92a6c54297fa"
+version = "0.8.1"
 
 [[URIParser]]
 deps = ["Test", "Unicode"]

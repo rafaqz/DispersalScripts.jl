@@ -11,7 +11,7 @@ humanlay = HumanLayer(human)
 using JLD2
 @load "human_precalc.jld"
 
-# Run precalc and save to file
+# Run precalc and save to file (uncomment these lines for the first run)
 # precalc, prop = Dispersal.precalc_human_dispersal(human, 1, 100)
 # @save "human_precalc.jld" precalc prop
 
