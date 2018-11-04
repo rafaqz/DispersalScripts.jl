@@ -1,25 +1,30 @@
 # Precalculate and run the human dispersal model
 
 include("setup.jl")
+include("float.jl")
 
 world = readtiff(joinpath(path, "population_density.tif"))
-human = cropaust(world)
+human = max.(0.0, cropaust(world)) # .^(4/3)
 humanlay = HumanLayer(human)
 
-# Run precalc
-human .^= 4/3
-precalc, props = Dispersal.precalc_human_dispersal(human, 1, 200)
-precalc[100,140]
+# Load Precalc from File
+using JLD2
+@load "human_precalc.jld"
+
+# Run precalc and save to file
+# precalc, prop = Dispersal.precalc_human_dispersal(human, 1, 100)
+# @save "human_precalc.jld" precalc prop
 
 # Show a single precalc in a Gtk output
-out = GtkOutput(human)
-fill!(out[1], 0.0)
-Dispersal.populate!(out[1], precalc[300,150])
-show_frame(out)
+single = Dispersal.populate(precalc[50, 50], size(init))
+show_frame(GtkOutput(single))
 
-humandisp = HumanDispersal(precalc=precalc)
-
+humandisp = HumanDispersal(precalc=precalc, prob_threshold=0.5)
 model = Models(humandisp)
-output = GtkOutput(init)
+model = Models(suitability_growth, humandisp)
+model = Models(popdisp, humandisp, suitability_growth)
 
-sim!(output, model, init, layers; time=100)
+output = GtkOutput(init, fps=100)
+sim!(output, model, init, layers; time=1000)
+
+resume!(output, model, layers; time=1000)
