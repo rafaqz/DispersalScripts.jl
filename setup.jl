@@ -18,7 +18,7 @@ function readtiff(file)
     img = img[:,:,1]
 end
 cropaust(x) = x[3100:3600, 950:1350] # Australia
-# cropaust(x) = x[950:1250, 3400:3600] # Queensland
+# cropaust(x) = x[3450:3500, 950:1100] # Queensland
 
 path = "/home/raf/CESAR/Raster/"
 growth = cropaust(readtiff(joinpath(path, "new_limited_growth", "limited_growth_2017_01.tif")))
@@ -29,13 +29,11 @@ end
 for i = 10:12
     push!(growth_monthly, cropaust(readtiff(joinpath(path, "new_limited_growth", "limited_growth_2017_$i.tif"))))
 end
+growth_monthly = map(g->exp.(g), growth_monthly)
 import Dispersal: pressure 
-suit = growth_monthly[1] 
-suitlay = SuitabilityLayer(growth_monthly[1])
+suit = growth_monthly[1]
+suitlay = SuitabilityLayer(suit)
 suitseq = SuitabilitySequence((growth_monthly...,), 30);
 layers = suitseq
 
-init = zeros(Int64, size(growth))
-init[354, 24] = 1
-# init = CuArray(init)
-hood = DispersalNeighborhood(; f=exponential, radius=4, init=init)
+hood = DispersalNeighborhood(; f=exponential, radius=4)
