@@ -1,12 +1,13 @@
 using Flatten
 using Optim
 
-struct Parametriser{M,Y,S,R,O}
+struct Parametriser{M,Y,S,R,O,CR}
     model::M
     years::Y
     steps::S
     regions::R
     occurance::O
+    cell_region::CR
 end
 
 (p::Parametriser)(a) = begin
@@ -19,11 +20,11 @@ end
         sim!(output, model, init, layers; time = timesteps)
         for r in 1:p.regions
             for y in 1:p.years
-                s[r, y] = p.occurance .== r .&& output[y * p.steps_per_year] .> 0.0
+                s[r, y] = any(p.cell_region .== r .&& output[y * p.steps_per_year] .> 0.0)
             end
         end
     end
-    sum((s .- p.occurance).^2)
+    sum((s .- p.region_occurance).^2)
 end
 
 include("setup.jl")
@@ -34,5 +35,5 @@ years = 7
 regions = 50
 steps_per_year = 12
 
-f = Parametriser(model, years, steps, regions, occurance)
+f = Parametriser(model, years, steps, regions, cell_region, occurance)
 optimise(f, flatten(model))
