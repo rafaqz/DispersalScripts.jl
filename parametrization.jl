@@ -1,39 +1,44 @@
 using Flatten
 using Optim
 
-struct Parametriser{M,Y,S,R,O,CR}
+include("setup.jl")
+
+struct Parametriser{M,I,A,Y,S,R,O,CR}
     model::M
+    init::I
+    args::A
     years::Y
     steps::S
     regions::R
     occurance::O
-    cell_region::CR
+    region_lookup::CR
 end
 
-(p::Parametriser)(a) = begin
+(p::Parametriser)(a::AbstractVector) = begin
     model = Flatten.reconstruct(p.model, a)
     timesteps = p.years * p.steps_per_year
     s = zeros(Bool, p.regions, p.years)
-    output = ArrayOutput(init)
+    output = ArrayOutput(p.init)
 
+    cumsum = 0
     for i = 1:num_runs
-        sim!(output, model, init, layers; time = timesteps)
+        sim!(output, model, p.init, p.args...; time=timesteps)
         for r in 1:p.regions
             for y in 1:p.years
-                s[r, y] = any(p.cell_region .== r .&& output[y * p.steps_per_year] .> 0.0)
+                t = y * p.steps_per_year
+                s[r, y] = any(p.region_lookup .== r .&& output[t] .> 0.0)
             end
         end
+        cumsum += sum((s .- p.occurance).^2)
     end
-    sum((s .- p.region_occurance).^2)
+    cumsum
 end
 
-include("setup.jl")
-
 num_runs = 1000
-model = ModelList(popdisp, humandisp, suitability_growth)
+model = Models(popdisp, humandisp, suitability_growth)
 years = 7
 regions = 50
 steps_per_year = 12
 
-f = Parametriser(model, years, steps, regions, cell_region, occurance)
+f = Parametriser(model, init, (layers,), years, steps, regions, cell_region, occurance)
 optimise(f, flatten(model))
