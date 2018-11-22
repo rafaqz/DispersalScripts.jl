@@ -35,7 +35,7 @@ end
     cumsum
 end
 
-h = h5open("/home/raf/CESAR/spread_inputs.h5", "r")
+h = h5open("spread_inputs.h5", "r")
 occurance = convert.(Bool, read(h["state_year_spread"]))
 pg = replace(read(h["x_y_month_popgrowthfactor"]), NaN=>0)
 popgrowth = [permutedims(pg[:,:,i]) for i in 1:size(pg, 3)]
@@ -57,10 +57,10 @@ layers = SuitabilitySequence(popgrowth, 1);
 years = 6
 steps_per_year = 12
 timesteps = years * steps_per_year
-num_runs = 1000
+num_runs = 2 
 num_regions = maximum(cell_region)
 
 p = Parametriser(output, model, init, (layers,), years, steps_per_year, num_regions, num_runs, occurance, cell_region)
-@time p(flatten(model.models))
+# @time p(flatten(model.models))
 
-# o = optimise(p, flatten(Vector, model))
+o = optimize(p, flatten(Vector, model))
