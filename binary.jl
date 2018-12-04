@@ -20,5 +20,5 @@ model = Models(localdisp, suitability_mask, jumpdisp)
 model = Models(localdisp, jumpdisp, suitability_mask)
 
 output = GtkOutput(init, fps=100)
-sim!(output, model, init, layers; time=4000)
-resume!(output, model, layers; time=4000)
+sim!(output, model, init, layers; tstop=4000)
+resume!(output, model, layers; tadd=4000)

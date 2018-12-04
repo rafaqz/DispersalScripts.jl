@@ -1,6 +1,7 @@
+include("setup.jl")
+
 using Flatten, Optim, HDF5, Distributed
 
-include("setup.jl")
 
 @everywhere using Cellular
 
@@ -19,10 +20,10 @@ end
 
 @everywhere (p::Parametriser)(a) = begin
     model.models = Flatten.reconstruct(p.model.models, a)
-    timesteps = p.years * p.steps
+    tstop = p.years * p.steps
     s = zeros(Bool, p.regions, p.years)
     cumsum = @distributed (+) for i = 1:p.num_runs
-        sim!(p.output, model, p.init, p.args...; time=timesteps)
+        sim!(p.output, model, p.init, p.args...; tstop=timesteps)
         for r in 1:p.regions, y in 1:p.years
             t = y * p.steps
             annual_presence = reduce(+, a)
@@ -57,10 +58,13 @@ layers = SuitabilitySequence(popgrowth, 1);
 years = 6
 steps_per_year = 12
 timesteps = years * steps_per_year
-num_runs = 2 
+num_runs = 1
 num_regions = maximum(cell_region)
 
 p = Parametriser(output, model, init, (layers,), years, steps_per_year, num_regions, num_runs, occurance, cell_region)
-# @time p(flatten(model.models))
+using Profile, ProfileView
+Profile.clear()
+@profile p(flatten(model.models))
+ProfileView.view()
 
-o = optimize(p, flatten(Vector, model))
+# o = optimize(p, flatten(Vector, model))
