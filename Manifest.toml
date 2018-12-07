@@ -181,7 +181,7 @@ uuid = "8bb1440f-4735-579b-a4ab-409b98df4dab"
 
 [[Dispersal]]
 deps = ["Cellular", "DocStringExtensions", "FieldMetadata", "Flatten", "LinearAlgebra", "Mixers", "Parameters", "Random", "Requires", "Test"]
-git-tree-sha1 = "54f90e4dbf5cd43c183675d09417a9e4e21ac689"
+git-tree-sha1 = "a030bf9dfe9994b1101aaead210c78bcd53b391a"
 repo-rev = "master"
 repo-url = "https://github.com/rafaqz/Dispersal.jl"
 uuid = "72d8b834-28c9-57fc-8b6a-b9450a04c193"
