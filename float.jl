@@ -12,11 +12,11 @@ suitability_growth = SuitabilityExponentialGrowth(init)
 
 model = Models(suitability_growth)
 model = Models(popdisp)
-# model = Models(popdisp, suitability_growth)
+model = Models(popdisp, suitability_growth)
 
-# output = GtkOutput(init, fps=300, store=true)
-
-output = ArrayOutput(init)
+output = GtkOutput(init, fps=300, store=true)
+#
+output = ArrayOutput(init, 500)
 @time sim!(output, model, init, layers; tstop=500)
 
 resume!(output, model, layers; tadd=100)

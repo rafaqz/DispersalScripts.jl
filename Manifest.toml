@@ -49,11 +49,29 @@ git-tree-sha1 = "cd169880989669c2d48a72be9a2a691def62e257"
 uuid = "ad839575-38b3-5650-b840-f874b8c74a25"
 version = "0.9.0"
 
+[[Blosc]]
+deps = ["BinaryProvider", "CMakeWrapper", "Compat", "Libdl"]
+git-tree-sha1 = "71fb23581e1f0b0ae7be8ccf0ebfb3600e23ca41"
+uuid = "a74b3585-a348-5f62-a45c-50e91977d574"
+version = "0.5.1"
+
 [[BufferedStreams]]
 deps = ["Compat", "Test"]
 git-tree-sha1 = "5d55b9486590fdda5905c275bb21ce1f0754020f"
 uuid = "e1450e63-4bb3-523b-b2a4-4ffa8c0fd77d"
 version = "1.0.0"
+
+[[CMake]]
+deps = ["BinDeps", "Libdl", "Test"]
+git-tree-sha1 = "74853a75c26a4a73ac391ee26ee29ebeb5583d9f"
+uuid = "631607c0-34d2-5d66-819e-eb0f9aa2061a"
+version = "1.1.0"
+
+[[CMakeWrapper]]
+deps = ["BinDeps", "CMake", "Libdl", "Parameters", "Test"]
+git-tree-sha1 = "2b43d451639984e3571951cc687b8509b0a86c6d"
+uuid = "d5fb7624-851a-54ee-a528-d3f3bac0b4a0"
+version = "0.2.2"
 
 [[CSSUtil]]
 deps = ["Colors", "Compat", "JSON", "Measures", "Pkg", "WebIO"]
@@ -75,7 +93,7 @@ version = "0.2.0"
 
 [[Cellular]]
 deps = ["Cairo", "Colors", "DocStringExtensions", "FieldMetadata", "FileIO", "FixedPointNumbers", "Flatten", "Graphics", "Gtk", "Images", "Mixers", "OffsetArrays", "Parameters", "REPLGamesBase", "Requires", "Test", "UnicodeGraphics"]
-git-tree-sha1 = "9c23d183253c3c0edde71d87b411749b14f79ad7"
+git-tree-sha1 = "941b5f80e5268cf371d8bf852f600e6cd5806d6f"
 repo-rev = "master"
 repo-url = "https://github.com/rafaqz/Cellular.jl"
 uuid = "a5dba43e-3abc-5203-bfc5-584ca68d3f5b"
@@ -163,7 +181,7 @@ uuid = "8bb1440f-4735-579b-a4ab-409b98df4dab"
 
 [[Dispersal]]
 deps = ["Cellular", "DocStringExtensions", "FieldMetadata", "Flatten", "LinearAlgebra", "Mixers", "Parameters", "Random", "Requires", "Test"]
-git-tree-sha1 = "2b319f670998dc1c233031c48d1c2c882bfcb68e"
+git-tree-sha1 = "54f90e4dbf5cd43c183675d09417a9e4e21ac689"
 repo-rev = "master"
 repo-url = "https://github.com/rafaqz/Dispersal.jl"
 uuid = "72d8b834-28c9-57fc-8b6a-b9450a04c193"

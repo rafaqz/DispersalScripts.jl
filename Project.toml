@@ -1,6 +1,7 @@
 [deps]
 ArchGDAL = "c9ce4bd3-c3d5-55b8-8973-c0e20141b8c3"
 Blink = "ad839575-38b3-5650-b840-f874b8c74a25"
+Blosc = "a74b3585-a348-5f62-a45c-50e91977d574"
 Cellular = "a5dba43e-3abc-5203-bfc5-584ca68d3f5b"
 Dispersal = "72d8b834-28c9-57fc-8b6a-b9450a04c193"
 Interact = "c601a237-2ae4-5e1e-952c-7a85b0c7eef1"

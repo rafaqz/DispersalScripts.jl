@@ -3,7 +3,7 @@ include("setup.jl")
 @everywhere using Cellular
 @everywhere import Cellular: store_frame!
 
-using Flatten, Optim, HDF5, Distributed
+using Flatten, Optim, Distributed
 
 @Ok @Frames @everywhere struct SumOutput{SF} <: AbstractArrayOutput{T} 
     sum_frames::SF
