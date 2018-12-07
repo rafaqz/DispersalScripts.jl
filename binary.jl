@@ -2,7 +2,8 @@
 
 include("setup.jl")
 
-init = zeros(Int64, size(growth))
+
+init = zeros(Int64, size(suit))
 init[354, 24] = 1
 # init = CuArray(init)
 
@@ -20,5 +21,5 @@ model = Models(localdisp, suitability_mask, jumpdisp)
 model = Models(localdisp, jumpdisp, suitability_mask)
 
 output = GtkOutput(init, fps=100)
-sim!(output, model, init, layers; time=4000)
-resume!(output, model, layers; time=4000)
+sim!(output, model, init, layers; tstop=40)
+resume!(output, model, layers; tadd=4000)
