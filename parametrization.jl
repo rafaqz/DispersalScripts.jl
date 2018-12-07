@@ -45,9 +45,9 @@ end
     cumsum = @distributed (+) for i = 1:p.num_runs
         o = deepcopy(p.output)
         sim!(o, model, p.init, p.args...; tstop=timesteps)
-        for y in 1:p.years
+        for t in 1:p.years
             for r in 1:p.regions 
-                s[r, y] = any((p.region_lookup .== r) .& (o[y] .> 0))
+                s[r, t] = any((p.region_lookup .== r) .& (o[t] .> 0))
             end
         end
         out = sum((s .- p.occurance).^2)
