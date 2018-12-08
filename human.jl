@@ -25,6 +25,6 @@ model = Models(suitability_growth, humandisp)
 model = Models(popdisp, humandisp, suitability_growth)
 
 output = GtkOutput(init, fps=100)
-sim!(output, model, init, layers; tstop=1000)
+sim!(output, model, init; tstop=1000)
 
-resume!(output, model, layers; tadd=1000)
+resume!(output, model; tadd=1000)
