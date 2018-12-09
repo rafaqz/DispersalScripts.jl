@@ -2,21 +2,27 @@
 # james comment
 include("setup.jl")
 
-minmaxrange = 0.0, 10000.0
-init = ScalableMatrix(zeros(Float64, size(suit)), minmaxrange...)
-init[354, 24] = minmaxrange[2]/100
-# init[4, 24] = 10.0 # minmaxrange[2]/100
+min = 0.0 
+max = 10000.0
+init = zeros(Float64, size(suit))
+init[354, 24] = max/10
+init .= max/10
+# init[4, 24] = 10.0 # max/100
 
-popdisp = InwardsPopulationDispersal(neighborhood=hood, fraction=0.0001)
-suitability_growth = SuitabilityExponentialGrowth(init)
+popdisp = InwardsPopulationDispersal(neighborhood=hood, fraction=0.1)
+suitability_growth = SuitabilityExponentialGrowth(suitseq, min, max)
 
-model = Models(suitability_growth)
 model = Models(popdisp)
+model = Models(suitability_growth)
 model = Models(popdisp, suitability_growth)
 
-output = GtkOutput(init, fps=300, store=true)
-#
-output = ArrayOutput(init, 500)
-@time sim!(output, model, init, layers; tstop=500)
+output = GtkOutput(init, fps=50, store=true, min=min, max=max)
 
-resume!(output, model, layers; tadd=100)
+output = ArrayOutput(init, 100)
+@time sim!(output, model, init; tstop=100)
+maximum(output[100])
+
+resume!(output, model; tadd=100)
+
+output = GtkOutput(suit, fps=50, store=true, min=minimum(suit), max=maximum(suit))
+
