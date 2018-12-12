@@ -29,7 +29,7 @@ RCall.rcall(:image, output[700])
 # make exponential population growth simulation
 init = convert(Array{Float64}, zeros(grid_dims))
 init[1,1] = 10
-exp_growth = EulerExponentialGrowth(r = 0.01, timestep = 1)
+exp_growth = EulerExponentialGrowth(intinsicrate = 0.01, timestep = 1)
 model = Models(exp_growth)
 output = ArrayOutput(init, tmax)
 sim!(output, model, init; tstop=tmax)
@@ -38,7 +38,7 @@ PlotGrowth(output)
 # make logistic population growth simulation
 init = convert(Array{Float64}, zeros(grid_dims))
 init[1,1] = 10
-logistic_growth = EulerLogisticGrowth(r = 0.1, timestep = 1, carrycap = 100)
+logistic_growth = EulerLogisticGrowth(intinsicrate = 0.1, timestep = 1, carrycap = 100)
 model = Models(logistic_growth)
 output = ArrayOutput(init, tmax)
 sim!(output, model, init; tstop=tmax)
@@ -47,7 +47,7 @@ PlotGrowth(output)
 # make exact logistic population growth simulation
 init = convert(Array{Float64}, zeros(grid_dims))
 init[1,1] = 10
-ex_log_growth = ExactLogisticGrowth(r = 0.1, timestep = 1, carrycap = 100)
+ex_log_growth = ExactLogisticGrowth(intinsicrate = 0.1, timestep = 1, carrycap = 100)
 model = Models(ex_log_growth)
 output = ArrayOutput(init, tmax)
 sim!(output, model, init; tstop=tmax)
