@@ -5,8 +5,8 @@ include("setup.jl")
 min = 0.0 
 max = 10000.0
 init = zeros(Float64, size(suit))
-init[354, 24] = max/10
-init .= max/10
+init[300, 200] = max/100
+init .= max/100
 # init[4, 24] = 10.0 # max/100
 
 popdisp = InwardsPopulationDispersal(neighborhood=hood, fraction=0.1)

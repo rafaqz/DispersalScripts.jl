@@ -3,9 +3,8 @@
 include("setup.jl")
 
 init = zeros(Int64, size(suit))
-init[354, 24] = 1
+init[300, 200] = 1
 init .= 1
-# init = CuArray(init)
 
 localdisp = InwardsBinaryDispersal(neighborhood=hood)
 jumpdisp = JumpDispersal()
@@ -20,8 +19,8 @@ model = Models(jumpdisp, suitability_mask)
 model = Models(localdisp, suitability_mask, jumpdisp)
 model = Models(localdisp, jumpdisp, suitability_mask)
 
+output = ArrayOutput(init, 100)
 output = GtkOutput(init, fps=100)
-sim!(output, model, init; tstop=400)
-resume!(output, model; tadd=4000)
 
-
+sim!(output, model, init; tstop=100)
+resume!(output, model; tadd=100)
