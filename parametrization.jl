@@ -1,7 +1,7 @@
 include("setup.jl")
 include("growth.jl")
 include("human.jl")
-# using Blink
+using Blink
 # using Optim 
 
 @everywhere using Cellular
@@ -34,7 +34,9 @@ end
     end
 end
 
-@everywhere year_from_month(o, t) = (t - 1one(t)) ÷ o.steps + one(t) @everywhere struct Parametriser{OP,M,I,A,Y,S,R,N,OC,CR}
+@everywhere year_from_month(o, t) = (t - 1one(t)) ÷ o.steps + one(t) 
+
+@everywhere struct Parametriser{OP,M,I,A,Y,S,R,N,OC,CR}
     output::OP
     model::M
     init::I
