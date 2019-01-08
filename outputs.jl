@@ -11,4 +11,4 @@ output = ArrayOutput(init)
 
 output = REPLOutput{:braile}(init; fps=800, color=Crayon(foreground=:red, background=:white, bold=true))
 output = REPLOutput{:braile}(init; fps=100, color=:red, store=false)
-output = REPLOutput{:block}(init; fps=500, color=:blue, store=false)
+output = REPLOutput{:block}(init; fps=500, color=:red, store=false)

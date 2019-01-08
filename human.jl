@@ -1,30 +1,33 @@
 # Precalculate and run the human dispersal model
 
-include("setup.jl")
-include("float.jl")
-
-world = readtiff(joinpath(path, "population_density.tif"))
-human = max.(0.0, cropaust(world)) # .^(4/3)
-humanlay = HumanLayer(human)
-
 # Load Precalc from File
-using JLD2
-@load "human_precalc.jld"
+# using JLD2
+# @load "usa_precalc.jld"
+human_pop = replace(read(data["x_y_popdens"]), NaN=>missing)
+cellsize = 1.0
+scale = 8
+aggregator = Dispersal.MeanDownsampling()
+human_exponent = 4.0/3.0
+dist_exponent = 1.0
+par_a = 1e-3
+shortlist_len = 100
+
 
 # Run precalc and save to file (uncomment these lines for the first run)
-# precalc, prop = Dispersal.precalc_human_dispersal(human, 1, 100)
-# @save "human_precalc.jld" precalc prop
+# @time precalc, props = Dispersal.precalc_human_dispersal(downsampled_human, cellsize, shortlist_len, human_exponent, dist_exponent)
+# @save "usa_precalc.jld" precalc props
+
+@time humandisp = HumanDispersal(human_pop; scale=scale, shortlist_len=shortlist_len, par_a = par_a,
+                                 cellsize=cellsize, human_exponent=human_exponent, dist_exponent=dist_exponent)
+
+HumanDispersal(human_pop, cellsize, scale, aggregator, 
+               human_exponent, dist_exponent, par_a, shortlist_len, [], [], [])
+HumanDispersal{typeof.((human_pop, cellsize, scale, aggregator, 
+                        human_exponent, dist_exponent, par_a, shortlist_len, [], [], []))...
+              }(human_pop, cellsize, scale, aggregator, human_exponent, dist_exponent, par_a, shortlist_len, [], [], [])
+reconstruct(humandisp, flatten(humandisp))
 
 # Show a single precalc in a Gtk output
-single = Dispersal.populate(precalc[50, 50], size(init))
-show_frame(GtkOutput(single))
-
-humandisp = HumanDispersal(precalc=precalc, prob_threshold=0.5)
-model = Models(humandisp)
-model = Models(suitability_growth, humandisp)
-model = Models(popdisp, humandisp, suitability_growth)
-
-output = GtkOutput(init, fps=100)
-sim!(output, model, init; tstop=1000)
-
-resume!(output, model; tadd=1000)
+single = Dispersal.populate(humandisp.precalc[20, 20], size(init), scale)
+GtkOutput(single, min=0.0, max=maximum(single))
+replace(x -> ismissing(x) ? 0.0 : x, humandisp.proportion_covered)
