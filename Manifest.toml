@@ -102,7 +102,7 @@ version = "0.2.0"
 
 [[Cellular]]
 deps = ["Cairo", "Colors", "DocStringExtensions", "FieldMetadata", "FileIO", "FixedPointNumbers", "Flatten", "Graphics", "Gtk", "Images", "Mixers", "OffsetArrays", "Parameters", "REPLGamesBase", "Requires", "Test", "UnicodeGraphics"]
-git-tree-sha1 = "768fe2fb21eb2bf113623368720a526d5e5b5c75"
+git-tree-sha1 = "a03efa42e82205de6b357574abf819bb69825fee"
 repo-rev = "master"
 repo-url = "https://github.com/rafaqz/Cellular.jl"
 uuid = "a5dba43e-3abc-5203-bfc5-584ca68d3f5b"
