@@ -8,7 +8,7 @@ using HDF5
 grid_dims = (100, 100)
 tmax = 1000
 
-function PlotGrowth(output)
+function plotgrowth(output)
     # function for plotting pop size vs time in R
     x = [i for i =1:tmax]
     y = [sum(output[i]) for i = 1:tmax]
@@ -23,35 +23,35 @@ localdisp = InwardsPopulationDispersal(neighborhood=hood, fraction=1.0)
 model = Models(localdisp)
 output = ArrayOutput(init, tmax)
 @time sim!(output, model, init; tstop=tmax)
-PlotGrowth(output)
+plotgrowth(output)
 RCall.rcall(:image, output[700])
 
 # make exponential population growth simulation
 init = convert(Array{Float64}, zeros(grid_dims))
 init[1,1] = 10
-exp_growth = EulerExponentialGrowth(intinsicrate = 0.01, timestep = 1)
+exp_growth = EulerExponentialGrowth(intrinsicrate = 0.01, timestep = 1)
 model = Models(exp_growth)
 output = ArrayOutput(init, tmax)
 sim!(output, model, init; tstop=tmax)
-PlotGrowth(output)
+plotgrowth(output)
 
 # make logistic population growth simulation
 init = convert(Array{Float64}, zeros(grid_dims))
 init[1,1] = 10
-logistic_growth = EulerLogisticGrowth(intinsicrate = 0.1, timestep = 1, carrycap = 100)
+logistic_growth = EulerLogisticGrowth(intrinsicrate = 0.1, timestep = 1, carrycap = 100)
 model = Models(logistic_growth)
 output = ArrayOutput(init, tmax)
 sim!(output, model, init; tstop=tmax)
-PlotGrowth(output)
+plotgrowth(output)
 
 # make exact logistic population growth simulation
 init = convert(Array{Float64}, zeros(grid_dims))
 init[1,1] = 10
-ex_log_growth = ExactLogisticGrowth(intinsicrate = 0.1, timestep = 1, carrycap = 100)
+ex_log_growth = ExactLogisticGrowth(intrinsicrate = 0.1, timestep = 1, carrycap = 100)
 model = Models(ex_log_growth)
 output = ArrayOutput(init, tmax)
 sim!(output, model, init; tstop=tmax)
-PlotGrowth(output)
+plotgrowth(output)
 
 # suitability growth layer and logistic population growth simulation
 init = convert(Array{Float64}, zeros(grid_dims))
@@ -66,7 +66,7 @@ suit_log_growth = SuitabilityEulerLogisticGrowth(layers = popgrowthseq, carrycap
 model = Models(suit_log_growth)
 output = ArrayOutput(init, tmax)
 sim!(output, model, init; tstop=tmax)
-PlotGrowth(output)
+plotgrowth(output)
 RCall.rcall(:image, output[end])
 
 ### local dispersal + suitabilty logistic growth simulation
@@ -75,13 +75,16 @@ init[(Int.(round.(grid_dims)./2))...] = 1
 model = Models(localdisp, ex_log_growth)
 output = ArrayOutput(init, tmax)
 @time sim!(output, model, init; tstop = tmax)
-PlotGrowth(output)
+plotgrowth(output)
 RCall.rcall(:image, output[50])
 
 ### simulation with real seasonalith data for US ###
 # load data
 h = h5open("spread_inputs.h5", "r")
+names(h)
 pg = replace(read(h["x_y_month_intrinsicGrowthRate"]), NaN=>0)
+human = replace(read(h["x_y_popdens"]), NaN=>0)
+@time RCall.rcall(:image, transpose((human[reverse(1:end),:]).^(1/4)))
 popgrowth = [permutedims(pg[reverse(1:end),:,i]) for i in 1:size(pg, 3)]
 RCall.rcall(:image, popgrowth[5])
 
@@ -97,12 +100,11 @@ allee = AlleeExtinction(minfounders = 1)
 model = Models(localdisp, suit_log_growth, allee)
 output = ArrayOutput(init, tmax)
 @time sim!(output, model, init; tstop=tmax)
-PlotGrowth(output)
+plotgrowth(output)
 RCall.rcall(:image, output[end])
 
-output = GtkOutput(init, fps=50, store=false, min=0, max=100)
-@time sim!(output, model, init; tstop=tmax)
+## Gtk doesnt work
+# output = GtkOutput(init, fps=50, store=false, min=0, max=100)
+# @time sim!(output, model, init; tstop=tmax)
 
-
-
-# resume!(output, model, layers; time=4000)
+# resume!(output, model, layers; time=4000
