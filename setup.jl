@@ -6,6 +6,7 @@ using Cellular
 using Dispersal
 using Distributed
 using Flatten
+using Unitful: d
  
 data = h5open("spread_inputs.h5", "r")
 init = read(data["x_y_initial"])

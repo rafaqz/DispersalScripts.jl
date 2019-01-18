@@ -256,9 +256,9 @@ version = "0.0.1"
 
 [[FileIO]]
 deps = ["Pkg", "Random", "Test"]
-git-tree-sha1 = "1a114d08094e7267ba8d4d684f930d5a722184de"
+git-tree-sha1 = "c94b0787956629036fb2b20fccde9e52b89d079a"
 uuid = "5789e2e9-d7fb-5bc7-8068-2c6fae9b9549"
-version = "1.0.4"
+version = "1.0.5"
 
 [[FileWatching]]
 uuid = "7b1f6079-737a-58dc-b8bc-7a2ca5c1b5ee"
@@ -564,10 +564,10 @@ version = "0.1.0"
 uuid = "a63ad114-7e13-5084-954f-fe012c677804"
 
 [[Mustache]]
-deps = ["Tables", "Test"]
-git-tree-sha1 = "be8d12b4a84ed7b592a6540b71c664440a4dd7f1"
+deps = ["Printf", "Tables", "Test"]
+git-tree-sha1 = "9a548a873a8de9f982284817b89ae0c5faa5a80b"
 uuid = "ffc61752-8dc7-55ee-8c37-f3e9cdd09e70"
-version = "0.5.8"
+version = "0.5.10"
 
 [[Mux]]
 deps = ["AssetRegistry", "Base64", "HTTP", "Hiccup", "Lazy", "Pkg", "Sockets", "Test", "WebSockets"]
@@ -859,6 +859,12 @@ uuid = "4ec0a83e-493e-50e2-b9ac-8f72acf5a8f5"
 git-tree-sha1 = "a64c147ee6d3303a42fa7d1eed3eef26e6d53415"
 uuid = "ebadf6b4-db70-5817-83da-4a19ad584e34"
 version = "0.0.1"
+
+[[Unitful]]
+deps = ["LinearAlgebra", "Random", "Test"]
+git-tree-sha1 = "ba654182cad07cd6c1f3ae969475e556db3283ea"
+uuid = "1986cc42-f94f-5a68-af5c-568840ba703d"
+version = "0.14.0"
 
 [[VersionParsing]]
 deps = ["Compat"]

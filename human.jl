@@ -7,10 +7,11 @@ human_pop = replace(read(data["x_y_popdens"]), NaN=>missing)
 cellsize = 1.0
 scale = 8
 aggregator = Dispersal.MeanDownsampling()
-human_exponent = 4.0/3.0
+human_exponent = 2.0
 dist_exponent = 1.0
-par_a = 1e-5
+par_a = 2.75e-6
 shortlist_len = 100
+timestep = 1d
 
 
 # Run precalc and save to file (uncomment these lines for the first run)
@@ -18,7 +19,8 @@ shortlist_len = 100
 # @save "usa_precalc.jld" precalc props
 
 @time humandisp = HumanDispersal(human_pop; scale=scale, shortlist_len=shortlist_len, par_a=par_a,
-                                 cellsize=cellsize, human_exponent=human_exponent, dist_exponent=dist_exponent)
+                                 cellsize=cellsize, human_exponent=human_exponent, 
+                                 dist_exponent=dist_exponent, timestep=timestep)
 
 # Show a single precalc in a Gtk output
 single = Dispersal.populate(humandisp.precalc[20, 20], size(init), scale)
