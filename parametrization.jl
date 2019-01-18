@@ -99,7 +99,7 @@ include("growth.jl")
 growth_layers = Sequence(popgrowth * d^-1, month); 
 growth = SuitabilityExactLogisticGrowth(layers=growth_layers, carrycap=maxval);
 
-hood = DispersalKernel(; f=exponential, radius=4, param=param)
+hood = DispersalKernel(; f=exponential, radius=4)
 popdisp = InwardsPopulationDispersal(neighborhood=hood)
 
 mask_layer = replace(x -> isnan(x) ? 0 : 1, read(data["x_y_popdens"]))[:, :, 1]
