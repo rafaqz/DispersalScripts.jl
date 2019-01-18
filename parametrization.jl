@@ -159,4 +159,5 @@ lower = [l[1] for l in lims]
 upper = [l[2] for l in lims]
 
 # Run the optimizer ######################################################
-o = optimize(p, lower, upper, params)
+p(namedparams)
+# o = optimize(p, lower, upper, namedparams)
