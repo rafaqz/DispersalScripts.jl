@@ -1,10 +1,7 @@
 include("setup.jl")
-include("growth.jl")
-include("human.jl")
 # using Blink
 using Optim
 using FieldMetadata
-
 @everywhere using LabelledArrays
 @everywhere using Cellular
 @everywhere import Cellular: store_frame!, show_frame, allocate_frames!, @Ok, @Frames, is_async
@@ -62,7 +59,6 @@ end
     s = zeros(Bool, p.regions, p.years)
     # Used a labelled array so we don't have to know the index number
     # fort par_a.
-    lv = LVector{eltype(params),typeof(params),names}(params)
     # Large par a take forever. Limit the max value.
     cumsum = @distributed (+) for i = 1:p.num_runs
         o = deepcopy(p.output)
@@ -80,6 +76,9 @@ end
     cumsum
 end
 
+
+# Define parametrization values ########################################
+
 minval, maxval = 0.0, 100000.0
 init[250:280, 50:80] .= maxval / 100
 occurance = convert.(Bool, read(data["state_year_spread"]))
@@ -92,17 +91,23 @@ num_regions = maximum(cell_region)
 month = 365.25d/12
 simtimestep = month
 
-hood = DispersalKernel(; f=exponential, radius=4, param=param)
-popdisp = InwardsPopulationDispersal(neighborhood=hood)
+# Define model components ##############################################
+include("human.jl")
 
+include("growth.jl")
+# Convert growth arrays to units
 growth_layers = Sequence(popgrowth * d^-1, month); 
 growth = SuitabilityExactLogisticGrowth(layers=growth_layers, carrycap=maxval);
+
+hood = DispersalKernel(; f=exponential, radius=4, param=param)
+popdisp = InwardsPopulationDispersal(neighborhood=hood)
 
 mask_layer = replace(x -> isnan(x) ? 0 : 1, read(data["x_y_popdens"]))[:, :, 1]
 mask = Dispersal.Mask(mask_layer)
 
 allee = AlleeExtinction(minfounders=5)
 
+# Define all the possible models  ######################################
 model = Models(humandisp; timestep=simtimestep)
 model = Models(growth, mask; timestep=simtimestep)
 model = Models(humandisp, (growth, mask); timestep=simtimestep)
@@ -112,6 +117,8 @@ model = Models((popdisp, allee); timestep=simtimestep)
 model = Models(humandisp, (popdisp, growth, mask); timestep=simtimestep)
 model = Models((popdisp, allee, growth, mask); timestep=simtimestep)
 model = Models(humandisp, (popdisp, allee, growth, mask); timestep=simtimestep);
+
+# Outputs if you want to view/play with the model ######################
 
 # output = BlinkOutput(init, model; min=minval, max=maxval);
 # Blink.AtomShell.@dot output.window webContents.setZoomFactor(1.0) # output = REPLOutput{:block}(init)
@@ -124,21 +131,32 @@ model = Models(humandisp, (popdisp, allee, growth, mask); timestep=simtimestep);
 # @time sim!(output, model, init; tstop=timesteps)
 # disp = GtkOutput(init; min=minval, max=maxval*steps_per_year, store=false)
 
+# Set up the parametrizer ##############################################
+
 output = SumOutput(init, steps_per_year, years, Cellular.NullOutput())
 p = Parametriser(output, model, init, years, steps_per_year, num_regions,
                  num_runs, occurance, cell_region)
 # sim!(output, p.model, p.init; tstop=tstop)
 
-minfounders = 140.0
-param = 1.0
-
+# Get array and field names for the model from Flatten
 params = flatten(Vector, model.models)
-reconstruct(model.models, params) 
-names = fieldnameflatten(Vector, model.models)
+names = fieldnameflatten(model.models)
+# Make a labelled array so we can ignore the order
+namedparams = LArray{eltype(params),1,names}(params)
 
+# Assign our default parameters to the labelled array
+namedparams.minfounders = 140.0
+namedparams.param = 1.0
+namedparams.human_exponent = 2.0
+namedparams.dist_exponent = 1.0
+namedparams.par_a = 2.75e-6
+namedparams.max_dispersers = 50.0
+show(namedparams)
+
+# Get the lower and upper limits for params with flatten
 lims = metaflatten(model.models, FieldMetadata.limits)
 lower = [l[1] for l in lims]
 upper = [l[2] for l in lims]
 
-# @time p(params)
+# Run the optimizer ######################################################
 o = optimize(p, lower, upper, params)
