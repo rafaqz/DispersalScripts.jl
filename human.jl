@@ -10,6 +10,7 @@ aggregator = Dispersal.MeanDownsampling()
 human_exponent = 2.0
 dist_exponent = 1.0
 par_a = 2.75e-6
+max_dispersers = 50.0
 shortlist_len = 100
 timestep = 1d
 
@@ -19,7 +20,7 @@ timestep = 1d
 # @save "usa_precalc.jld" precalc props
 
 @time humandisp = HumanDispersal(human_pop; scale=scale, shortlist_len=shortlist_len, par_a=par_a,
-                                 cellsize=cellsize, human_exponent=human_exponent, 
+                                 max_dispersers=max_dispersers, cellsize=cellsize, human_exponent=human_exponent, 
                                  dist_exponent=dist_exponent, timestep=timestep)
 
 # Show a single precalc in a Gtk output

@@ -11,8 +11,7 @@ using FieldMetadata
 @everywhere import Flatten: flatten
 
 
-@Ok @Frames @everywhere struct SumOutput{DI,SF} <: AbstractArrayOutput{T} where DI <: AbstractOutput
-    disp::DI
+@Ok @Frames @everywhere struct SumOutput{DI,SF} <: AbstractArrayOutput{T} where DI <: AbstractOutput disp::DI
     steps::SF
 end
 
@@ -93,9 +92,6 @@ num_regions = maximum(cell_region)
 month = 365.25d/12
 simtimestep = month
 
-minfounders = 140.0
-param = 1.0
-
 hood = DispersalKernel(; f=exponential, radius=4, param=param)
 popdisp = InwardsPopulationDispersal(neighborhood=hood)
 
@@ -105,7 +101,7 @@ growth = SuitabilityExactLogisticGrowth(layers=growth_layers, carrycap=maxval);
 mask_layer = replace(x -> isnan(x) ? 0 : 1, read(data["x_y_popdens"]))[:, :, 1]
 mask = Dispersal.Mask(mask_layer)
 
-allee = AlleeExtinction()
+allee = AlleeExtinction(minfounders=5)
 
 model = Models(humandisp; timestep=simtimestep)
 model = Models(growth, mask; timestep=simtimestep)
@@ -133,12 +129,16 @@ p = Parametriser(output, model, init, years, steps_per_year, num_regions,
                  num_runs, occurance, cell_region)
 # sim!(output, p.model, p.init; tstop=tstop)
 
+minfounders = 140.0
+param = 1.0
 
 params = flatten(Vector, model.models)
+reconstruct(model.models, params) 
 names = fieldnameflatten(Vector, model.models)
+
 lims = metaflatten(model.models, FieldMetadata.limits)
 lower = [l[1] for l in lims]
 upper = [l[2] for l in lims]
 
-@time p(params)
+# @time p(params)
 o = optimize(p, lower, upper, params)

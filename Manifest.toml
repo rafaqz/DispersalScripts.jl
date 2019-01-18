@@ -208,7 +208,7 @@ version = "0.0.7"
 
 [[Dispersal]]
 deps = ["Cellular", "Distributed", "Distributions", "DocStringExtensions", "FieldMetadata", "Flatten", "LinearAlgebra", "Mixers", "Parameters", "Random", "Requires", "Test"]
-git-tree-sha1 = "a58449210b382dd65ad01d24a19f3840e4238a82"
+git-tree-sha1 = "5b806844a40329c9c9c008ea030007ddd03e6ea9"
 repo-rev = "master"
 repo-url = "https://github.com/rafaqz/Dispersal.jl"
 uuid = "72d8b834-28c9-57fc-8b6a-b9450a04c193"
@@ -476,6 +476,12 @@ deps = ["JSExpr", "JSON", "Observables", "Pkg", "Test", "WebIO"]
 git-tree-sha1 = "63e5e0bd2e9923191c30bb1e3d6e4d579155ddfa"
 uuid = "bcebb21b-c2e3-54f8-a781-646b90f6d2cc"
 version = "0.2.0"
+
+[[LabelledArrays]]
+deps = ["InteractiveUtils", "LinearAlgebra", "StaticArrays", "Test"]
+git-tree-sha1 = "cbb0c53a52e993366cf0b6332e803a8faa668735"
+uuid = "2ee39098-c373-598a-b85f-a56591580800"
+version = "0.3.0"
 
 [[Lazy]]
 deps = ["Compat", "MacroTools", "Test"]
