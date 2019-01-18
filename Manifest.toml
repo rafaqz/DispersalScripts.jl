@@ -102,7 +102,7 @@ version = "0.2.0"
 
 [[Cellular]]
 deps = ["Cairo", "Colors", "DocStringExtensions", "FieldMetadata", "FileIO", "FixedPointNumbers", "Flatten", "Graphics", "Gtk", "Images", "Mixers", "OffsetArrays", "Parameters", "REPLGamesBase", "Requires", "Test", "UnicodeGraphics"]
-git-tree-sha1 = "a8dd9436516e9b39f5e759a2545a5f86c0254fc5"
+git-tree-sha1 = "e02f96fae4c7b356a332064a7b196245eb0ad829"
 repo-rev = "master"
 repo-url = "https://github.com/rafaqz/Cellular.jl"
 uuid = "a5dba43e-3abc-5203-bfc5-584ca68d3f5b"
@@ -208,7 +208,7 @@ version = "0.0.7"
 
 [[Dispersal]]
 deps = ["Cellular", "Distributed", "Distributions", "DocStringExtensions", "FieldMetadata", "Flatten", "LinearAlgebra", "Mixers", "Parameters", "Random", "Requires", "Test"]
-git-tree-sha1 = "299354d704d67393ae0508b7f280f2b3d3512dca"
+git-tree-sha1 = "a58449210b382dd65ad01d24a19f3840e4238a82"
 repo-rev = "master"
 repo-url = "https://github.com/rafaqz/Dispersal.jl"
 uuid = "72d8b834-28c9-57fc-8b6a-b9450a04c193"
