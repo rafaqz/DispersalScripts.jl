@@ -1,4 +1,5 @@
 # Precalculate and run the human dispersal model
+using Statistics
 
 # Load Precalc from File
 # using JLD2
@@ -6,7 +7,7 @@
 human_pop = replace(read(data["x_y_popdens"]), NaN=>missing)
 cellsize = 1.0
 scale = 8
-aggregator = Dispersal.MeanDownsampling()
+aggregator = mean
 human_exponent = 2.0
 dist_exponent = 1.0
 par_a = 2.75e-6
