@@ -101,8 +101,8 @@ uuid = "aafaddc9-749c-510e-ac4f-586e18779b91"
 version = "0.2.0"
 
 [[Cellular]]
-deps = ["Cairo", "Colors", "DocStringExtensions", "FieldMetadata", "FileIO", "FixedPointNumbers", "Flatten", "Graphics", "Gtk", "Images", "Mixers", "OffsetArrays", "Parameters", "REPLGamesBase", "Requires", "Test", "UnicodeGraphics"]
-git-tree-sha1 = "b32fb079709e5f9d51e0e593b0a3be5554619f28"
+deps = ["AssetRegistry", "Cairo", "Colors", "DocStringExtensions", "FieldMetadata", "FileIO", "FixedPointNumbers", "Flatten", "Graphics", "Gtk", "ImageMagick", "Images", "Interact", "InteractBase", "InteractBulma", "Mixers", "OffsetArrays", "Parameters", "REPLGamesBase", "Requires", "Test", "UnicodeGraphics", "WebSockets"]
+git-tree-sha1 = "fbfd556ede5e1c8833558c19a4801e2c44b534d0"
 repo-rev = "master"
 repo-url = "https://github.com/rafaqz/Cellular.jl"
 uuid = "a5dba43e-3abc-5203-bfc5-584ca68d3f5b"
@@ -207,8 +207,8 @@ uuid = "b552c78f-8df3-52c6-915a-8e097449b14b"
 version = "0.0.8"
 
 [[Dispersal]]
-deps = ["Cellular", "Distributed", "Distributions", "DocStringExtensions", "FieldMetadata", "Flatten", "LinearAlgebra", "Mixers", "Parameters", "Random", "Requires", "Statistics", "Test"]
-git-tree-sha1 = "80bb371505f01bac4ced69a109b75114575a5d92"
+deps = ["Cellular", "Colors", "Distributed", "Distributions", "DocStringExtensions", "FieldMetadata", "Flatten", "LinearAlgebra", "Mixers", "Parameters", "Random", "Requires", "Statistics", "Test"]
+git-tree-sha1 = "5eb6e5b86d4fce865fc50eae13a9d35edc6634c9"
 repo-rev = "master"
 repo-url = "https://github.com/rafaqz/Dispersal.jl"
 uuid = "72d8b834-28c9-57fc-8b6a-b9450a04c193"
@@ -364,6 +364,12 @@ deps = ["CatIndices", "ColorVectorSpace", "Colors", "ComputationalResources", "D
 git-tree-sha1 = "9bb70bff423fb26b45817da5f127d71e662bfe50"
 uuid = "6a3955dd-da59-5b1f-98d4-e7296123deb5"
 version = "0.5.2"
+
+[[ImageMagick]]
+deps = ["BinaryProvider", "ColorTypes", "FileIO", "FixedPointNumbers", "ImageCore", "InteractiveUtils", "Libdl", "Pkg", "Random", "Test"]
+git-tree-sha1 = "0e4cc77fb131061b3525a97fd7d483b253c3aaad"
+uuid = "6218d12a-5da1-5696-b52f-db25d2ecc6d1"
+version = "0.7.1"
 
 [[ImageMetadata]]
 deps = ["AxisArrays", "ColorVectorSpace", "Colors", "Dates", "FixedPointNumbers", "ImageAxes", "ImageCore", "IndirectArrays", "Statistics", "Test"]
