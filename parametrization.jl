@@ -1,7 +1,8 @@
 include("setup.jl")
-# using Blink
+using Blink
 using Optim
 using FieldMetadata
+
 @everywhere using LabelledArrays
 @everywhere using Cellular
 @everywhere import Cellular: store_frame!, show_frame, allocate_frames!, @Ok, @Frames, is_async
@@ -20,7 +21,7 @@ end
     allocate_frames!(o, frames[1], 2:years)
     map(f -> f .= 0, o.frames)
     o
-end 
+end
 # Sums frames on the fly to reduce storage
 @everywhere store_frame!(o::SumOutput, frame, t) = begin
     sze = size(o[1])
@@ -49,44 +50,57 @@ end
     region_lookup::CR
 end
 
+@everywhere crossentropy = function(y, p, minprob = 1e-9)
+    p = min.(p, 1 - minprob)
+    p = max.(p, minprob)
+    -sum( y  .* log.(p) .+ (ones(size(y)) .- y) .* log.(ones(size(p)) .- p))
+end
+
 @everywhere (p::Parametriser)(params) = begin
     # Rebuild the model with the current parameters
-    names = fieldnameflatten(p.model.models) 
+    names = fieldnameflatten(p.model.models)
     println("Parameters: ", collect(zip(names, params)))
     p.model.models = Flatten.reconstruct(p.model.models, params)
     # Calculate the timespan
     tstop = p.years * p.steps
     s = zeros(Bool, p.regions, p.years)
+    det_thresh = 0.1 # proportion of state infected for detection
     # Used a labelled array so we don't have to know the index number
     # fort par_a.
     # Large par a take forever. Limit the max value.
+    # function to pass back s array (region x year)
     cumsum = @distributed (+) for i = 1:p.num_runs
         o = deepcopy(p.output)
         sim!(o, p.model, p.init; tstop=tstop)
         for t in 1:p.years
             for r in 1:p.regions
-                s[r, t] = any((p.region_lookup .== r) .& (o[t] .> 0))
+
+                s[r, t] = (Base.sum((p.region_lookup .== r) .& (o[t] .> 0)) ./
+                                Base.sum((p.region_lookup .== 6) )) > det_thresh
             end
         end
-        val = sum((s .- p.occurance).^2)
-        println("replicate: ", i, " - result: ", val)
-        val
+        val = sum((s .== p.occurance)) / prod(size(p.occurance))
+        println("replicate: ", i, " - accuracy: ", val)
+        s
     end
-    println("output: ", cumsum, "\n")
-    cumsum
+    # then build and array of s array means
+    probs = cumsum ./ p.num_runs
+    loss = crossentropy(p.occurance, probs)
+    println("cross-entropy loss: ", loss, "\n")
+    loss
 end
-
 
 # Define parametrization values ########################################
 
 minval, maxval = 0.0, 100000.0
-init[250:280, 50:80] .= maxval / 100
+# init[250:280, 50:80] .= maxval / 100
+init .*= maxval
 occurance = convert.(Bool, read(data["state_year_spread"]))
 cell_region = convert.(Int, replace(read(data["x_y_state"]), NaN=>0))[:, :, 1]
-years = 6
+years = size(data["state_year_spread"]))[2]
 steps_per_year = 12
 tstop = years * steps_per_year
-num_runs = 15
+num_runs = 5
 num_regions = maximum(cell_region)
 month = 365.25d/12
 simtimestep = month
@@ -96,7 +110,7 @@ include("human.jl")
 
 include("growth.jl")
 # Convert growth arrays to units
-growth_layers = Sequence(popgrowth * d^-1, month); 
+growth_layers = Sequence(popgrowth * d^-1, month);
 growth = SuitabilityExactLogisticGrowth(layers=growth_layers, carrycap=maxval);
 
 hood = DispersalKernel(; f=exponential, radius=4)
@@ -105,7 +119,7 @@ popdisp = InwardsPopulationDispersal(neighborhood=hood)
 mask_layer = replace(x -> isnan(x) ? 0 : 1, read(data["x_y_popdens"]))[:, :, 1]
 mask = Dispersal.Mask(mask_layer)
 
-allee = AlleeExtinction(minfounders=5)
+allee = AlleeExtinction(minfounders=5.0)
 
 # Define all the possible models  ######################################
 model = Models(humandisp; timestep=simtimestep)
@@ -121,11 +135,11 @@ model = Models(humandisp, (popdisp, allee, growth, mask); timestep=simtimestep);
 # Outputs if you want to view/play with the model ######################
 
 # output = BlinkOutput(init, model; min=minval, max=maxval);
-# Blink.AtomShell.@dot output.window webContents.setZoomFactor(1.0) # output = REPLOutput{:block}(init)
+# Blink.AtomShell.@dot output.window webContents.setZoomFactor(1.5) # output = REPLOutput{:block}(init)
 # sim!(output, model, init; tstop=300)
 
 # output = GtkOutput(init; min=minval, max=maxval, store=false)
-# sim!(output, model, init; tstop=200)
+# sim!(output, model, init; tstop=24)
 
 # savegif("usa.gif", output)
 # @time sim!(output, model, init; tstop=timesteps)
@@ -140,17 +154,17 @@ p = Parametriser(output, model, init, years, steps_per_year, num_regions,
 
 # Get array and field names for the model from Flatten
 params = flatten(Vector, model.models)
-names = fieldnameflatten(model.models)
+pnames = fieldnameflatten(model.models)
 # Make a labelled array so we can ignore the order
-namedparams = LArray{eltype(params),1,names}(params)
+namedparams = LArray{eltype(params),1,pnames}(params)
 
 # Assign our default parameters to the labelled array
-namedparams.minfounders = 140.0
-namedparams.param = 1.0
-namedparams.human_exponent = 2.0
-namedparams.dist_exponent = 1.0
-namedparams.par_a = 2.75e-6
-namedparams.max_dispersers = 50.0
+namedparams.minfounders = 55.0
+namedparams.param = 0.275
+namedparams.human_exponent = 1.5
+namedparams.dist_exponent = 2.93
+namedparams.par_a = 4.5e-7
+namedparams.max_dispersers = 112.0
 show(namedparams)
 
 # Get the lower and upper limits for params with flatten
@@ -160,4 +174,6 @@ upper = [l[2] for l in lims]
 
 # Run the optimizer ######################################################
 p(namedparams)
-# o = optimize(p, lower, upper, namedparams)
+# o = optimize(p, lower, upper, namedparams, NelderMead())
+# res = Optim.optimize(p, lower, upper, namedparams,
+#                      SAMIN(), Optim.Options(iterations=100))
