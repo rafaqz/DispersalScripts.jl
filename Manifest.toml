@@ -102,7 +102,7 @@ version = "0.2.0"
 
 [[Cellular]]
 deps = ["AssetRegistry", "Cairo", "Colors", "DocStringExtensions", "FieldMetadata", "FileIO", "FixedPointNumbers", "Flatten", "Graphics", "Gtk", "ImageMagick", "Images", "Interact", "InteractBase", "InteractBulma", "Mixers", "OffsetArrays", "Parameters", "REPLGamesBase", "Requires", "Test", "UnicodeGraphics", "WebSockets"]
-git-tree-sha1 = "fbfd556ede5e1c8833558c19a4801e2c44b534d0"
+git-tree-sha1 = "0e34a1e4fd7353884fea1e1053e4ccfe3df33500"
 repo-rev = "master"
 repo-url = "https://github.com/rafaqz/Cellular.jl"
 uuid = "a5dba43e-3abc-5203-bfc5-584ca68d3f5b"
@@ -140,9 +140,9 @@ version = "0.2.0"
 
 [[Compat]]
 deps = ["Base64", "Dates", "DelimitedFiles", "Distributed", "InteractiveUtils", "LibGit2", "Libdl", "LinearAlgebra", "Markdown", "Mmap", "Pkg", "Printf", "REPL", "Random", "Serialization", "SharedArrays", "Sockets", "SparseArrays", "Statistics", "Test", "UUIDs", "Unicode"]
-git-tree-sha1 = "f7712cd25c80a86d617c1abd23454714d4a546cc"
+git-tree-sha1 = "49269e311ffe11ac5b334681d212329002a9832a"
 uuid = "34da2185-b29b-5c13-b0c7-acf172513d20"
-version = "1.5.0"
+version = "1.5.1"
 
 [[ComputationalResources]]
 deps = ["Test"]
@@ -208,7 +208,7 @@ version = "0.0.8"
 
 [[Dispersal]]
 deps = ["Cellular", "Colors", "Distributed", "Distributions", "DocStringExtensions", "FieldMetadata", "Flatten", "LinearAlgebra", "Mixers", "Parameters", "Random", "Requires", "Statistics", "Test"]
-git-tree-sha1 = "5eb6e5b86d4fce865fc50eae13a9d35edc6634c9"
+git-tree-sha1 = "d62c917101d453410c77da4cfa0c950a1968f9ac"
 repo-rev = "master"
 repo-url = "https://github.com/rafaqz/Dispersal.jl"
 uuid = "72d8b834-28c9-57fc-8b6a-b9450a04c193"
@@ -397,9 +397,9 @@ version = "0.7.1"
 
 [[Images]]
 deps = ["AxisArrays", "Base64", "ColorTypes", "ColorVectorSpace", "Colors", "FileIO", "FixedPointNumbers", "Graphics", "ImageAxes", "ImageCore", "ImageDistances", "ImageFiltering", "ImageMetadata", "ImageMorphology", "ImageShow", "ImageTransformations", "IndirectArrays", "LinearAlgebra", "MappedArrays", "OffsetArrays", "Random", "Reexport", "SIUnits", "SparseArrays", "StaticArrays", "Statistics", "StatsBase", "Test", "TiledIteration"]
-git-tree-sha1 = "01291372b2c3a67191a8cc2ff291f33f5485ac8b"
+git-tree-sha1 = "cd938e28e4186b877851eb323231ad81d9d3534b"
 uuid = "916415d5-f1e6-5110-898d-aaa5f9f070e0"
-version = "0.17.0"
+version = "0.17.1"
 
 [[IndirectArrays]]
 deps = ["Compat", "Test"]
