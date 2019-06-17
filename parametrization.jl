@@ -89,8 +89,8 @@ for model in my_models
       model.models = reconstruct(model.models, namedparams)
 
       output = SumOutput(init, frames_per_step, steps, Cellular.NullOutput())
-      p = RegionParametriser(output, model, init, objective, region_lookup,
-                       frames_per_step, num_replicates, detection_threshold)
+      p = Parametriser(output, model, init, num_replicates,
+                       objective, loss, tstop)
 
       # Get the lower and upper limits for params with flatten
       lims = metaflatten(model.models, FieldMetadata.limits)
@@ -99,14 +99,13 @@ for model in my_models
       #
       # p(namedparams)
       res = Optim.optimize(p, lower, upper, namedparams,
-                          SAMIN(), Optim.Options(iterations=1000))
+                          SAMIN(), Optim.Options(iterations=3))
       push!(out, res)
 end
 @save "SWD/model_comparison_results.jld2" out
 
 # make dictionary to match up parameters from simpler models
-syms = push!(collect(symbols(Optim.minimizer(out[1]))), :USloss,
-:USaccuracy, :EUloss, :EUaccuracy)
+syms = push!(collect(symbols(Optim.minimizer(out[1]))), :USloss,:USaccuracy, :EUloss, :EUaccuracy)
 fvars = Dict()
 for i in 1:length(syms)
    fvars[syms[i]] = i
@@ -135,7 +134,7 @@ frames_per_step = 12
 tstop = steps * frames_per_step
 output = SumOutput(init, frames_per_step, steps, Cellular.NullOutput())
 for i in 1:length(my_models)
-      p = RegionParametriser(output, my_models[i], init, objective, region_lookup, frames_per_step, num_replicates, detection_threshold)
+      p = Parametriser(output, my_models[i], init, objective, region_lookup, frames_per_step, num_replicates, detection_threshold)
       df[i + 1][fvars[:EUloss]] = p(Optim.minimizer(out[i]))
 end
 CSV.write("SWD/model_comparison.csv", df)
