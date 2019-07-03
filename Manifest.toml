@@ -334,8 +334,10 @@ uuid = "53c48c17-4a7d-5ca2-90c5-79b7896eea93"
 version = "0.6.1"
 
 [[Flatten]]
-deps = ["FieldMetadata"]
-git-tree-sha1 = "a8131f4442cd0f154b7da43244746263fc1afcef"
+deps = ["FieldMetadata", "Requires"]
+git-tree-sha1 = "b044e1d4fe1a628bb6d778001668d72ed2562378"
+repo-rev = "master"
+repo-url = "https://github.com/rafaqz/Flatten.jl"
 uuid = "4c728ea3-d9ee-5c9a-9642-b6f7d7dc04fa"
 version = "0.2.0"
 
