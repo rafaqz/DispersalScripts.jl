@@ -26,12 +26,9 @@ simpredictions(obj::OffsetRegionObjective, simoutput) = begin
     remainingsteps = last(firststep) + 1:nframes
     frame = 3
     for frame in remainingsteps
-        step = stepfromframe(obj.framesperstep, frame, start)
+        step = stepfromframe(obj.framesperstep, frame, obj.start)
         steps[step] .|= poptoobs.(simoutput[frame], obj.detectionthreshold)
     end
-    steps[1] 
-    steps[2] 
-    steps[3] 
 
     # Allocate a boolean array to contain our presence/absence predictions
     prediction = zeros(Bool, size(obj.occurance))
