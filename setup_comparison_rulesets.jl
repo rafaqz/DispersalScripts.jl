@@ -1,7 +1,9 @@
 # data = h5open("spread_inputs_US.h5", "r")
-#
+
+include("objective.jl")
+
 setup_comparison_rulesets(datafile) = begin
-    detectionthreshold = 0.1
+    detectionthreshold = 1e5
     month = 365.25d/12
     simtimestep = month
     framesperstep = 12
@@ -13,7 +15,9 @@ setup_comparison_rulesets(datafile) = begin
     regionlookup = convert.(Int, replace(read(data["x_y_state"]), NaN=>0))[:, :, 1]
     steps = size(occurance, 2)
     tstop = steps * framesperstep
-    objective = RegionObjective(detectionthreshold, regionlookup, occurance, framesperstep)
+    start = 5 # we start five months/frames in - in May, close to the first sighting. 
+               # January has strongly negative growth rates in San Jose.
+    objective = OffsetRegionObjective(detectionthreshold, regionlookup, occurance, framesperstep, start)
 
 
     # Rules ###########################################################
@@ -23,10 +27,10 @@ setup_comparison_rulesets(datafile) = begin
     cellsize = 1.0
     scale = 8
     aggregator = mean
-    human_exponent = 2.1246
-    dist_exponent = 2.7974
-    par_a = 5.1885e-7
-    max_dispersers = 634.068
+    human_exponent = 2.0
+    dist_exponent = 2.0
+    par_a = 5e-8
+    max_dispersers = 500.0
     shortlist_len = 100
     @time humandisp = HumanDispersal(human_pop; scale=scale, shortlist_len=shortlist_len, par_a=par_a,
                                      max_dispersers=max_dispersers, cellsize=cellsize, human_exponent=human_exponent,
@@ -36,17 +40,17 @@ setup_comparison_rulesets(datafile) = begin
     constant_growth = ExactLogisticGrowth(intrinsicrate=0.1d^-1)
 
     # Climate driven growth
-    carrycap = 1000000.0
+    carrycap = 100000000.0
     pg = replace(read(data["x_y_month_intrinsicGrowthRate"]), NaN=>0)
     popgrowth = [pg[:, :, i] for i in 1:size(pg, 3)]
+    popgrowth = vcat(popgrowth[6:12], popgrowth[1:5])
     # Convert growth arrays to units
-    growth_layers = Sequence(popgrowth * d^-1, simtimestep)
+    growth_layers = Sequence(popgrowth .* d^-1, month)
     growth = SuitabilityExactLogisticGrowth(layers=growth_layers, carrycap=carrycap);
-    flattenable(ExactLogisticGrowth())
 
     # Kernel
-    param = 0.476303
-    hood = DispersalKernel(;formulation=ExponentialKernel(param), radius=4)
+    param = 0.2
+    hood = DispersalKernel(;formulation=ExponentialKernel(param), radius=6)
     localdisp = InwardsPopulationDispersal(neighborhood=hood)
 
     # Mask
@@ -54,21 +58,32 @@ setup_comparison_rulesets(datafile) = begin
     mask = Mask(mask_layer)
 
     # Allee
-    minfounders = 23.98
+    minfounders = 100.0 
     allee = AlleeExtinction(minfounders=minfounders)
 
     # Set initialisation array
-    init = read(data["x_y_initial"]) .* 10000.0 # Arbitrary initial condition 
+    init = read(data["x_y_initial"]) .* 10000000.0 # Arbitrary initial condition 
+
+    # Init Kernel - run one step of spread to account for uncertainy in reporting
+    # otherwise we may overfit some parameters to very specific initial conditions
+    param = 0.2
+    hood = DispersalKernel(;formulation=ExponentialKernel(param), radius=6)
+    localdisp = InwardsPopulationDispersal(neighborhood=hood)
 
     # Define combinations for comparison  ##########################
     kwargs = (init=init, timestep=simtimestep, min=0.0, max=carrycap)
-    ruleset_nolocal = Ruleset(humandisp, (allee, growth, mask); kwargs...)
-    ruleset_noallee = Ruleset(humandisp, (localdisp, growth, mask); kwargs...)
-    ruleset_noclimate = Ruleset(humandisp, (localdisp, allee, constant_growth, mask); kwargs...)
-    ruleset_nohuman = Ruleset((localdisp, allee, growth, mask); kwargs...)
-    ruleset_full = Ruleset(humandisp, (localdisp, allee, growth, mask); kwargs...)
+    nolocal = Ruleset(humandisp, (allee, growth, mask); kwargs...)
+    noallee = Ruleset(humandisp, (localdisp, growth, mask); kwargs...)
+    noclimate = Ruleset(humandisp, (localdisp, allee, constant_growth, mask); kwargs...)
+    nohuman = Ruleset((localdisp, allee, growth, mask); kwargs...)
+    full = Ruleset(humandisp, (localdisp, allee, growth, mask); kwargs...)
+    nolocalnoallee = Ruleset(humandisp, (growth, mask); kwargs...)
+    humangrowth = Ruleset(humandisp, growth; kwargs...)
+    onlygrowth = Ruleset(growth; kwargs...)
+    onlyhuman = Ruleset(humandisp; kwargs...)
 
-    ((Full=ruleset_full, No_local=ruleset_nolocal, No_allee=ruleset_noallee, 
-     No_human=ruleset_nohuman, No_climate=ruleset_noclimate), 
-     init, tstop, objective)
+    ((full=full, nolocal=nolocal, noallee=noallee, nohuman=nohuman, 
+      noclimate=noclimat), init, tstop, objective)
+      # nolocalnoallee=nolocalnoallee, humangrowth=humangrowth, 
+      # onlygrowth=onlygrowth, onlyhuman=onlyhuman), 
 end
