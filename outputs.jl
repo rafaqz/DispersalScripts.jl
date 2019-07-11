@@ -1,14 +1,28 @@
-# Choose an output
-using Interact, Blink, Crayons
-
-output = Cellular.BlinkOutput(init, model, layers)
-Blink.AtomShell.@dot output.window webContents.setZoomFactor(1.5)
-opentools(output.window)
-
-output = Cellular.MuxServer(init, model; port=8000)
-output = GtkOutput(init; fps=100, showmax_fps=10) 
 output = ArrayOutput(init) 
 
 output = REPLOutput{:braile}(init; fps=800, color=Crayon(foreground=:red, background=:white, bold=true))
 output = REPLOutput{:braile}(init; fps=100, color=:red, store=false)
 output = REPLOutput{:block}(init; fps=500, color=:red, store=false)
+
+
+# Frame Processing Colors
+truepositivecolor = (0.1, 0.8, 0.2)
+falsepositivecolor = (0.8, 0.1, 0.2)
+truenegativecolor = (1.0, 1.0, 1.0)
+falsenegativecolor = (0.8, 0.8, 0.1)
+maskcolor = (0.53, 0.53, 0.53)
+regionprocessor = ColorRegionFit(objective, truepositivecolor, falsepositivecolor,
+                                truenegativecolor, falsenegativecolor, maskcolor)
+
+# simpleprocessor = GreyscaleZerosProcessor(RGB24(0.5,0.5,0.5))
+# schemeprocessor = ColorSchemeProcessor(ColorSchemes.leonardo)
+# schemezerosprocessor = ColorSchemeZerosProcessor(ColorSchemes.vermeer, RGB24(0.5, 0.5, 0.5))
+
+using Crayons, CellularAutomataWeb, Blink
+output = BlinkOutput(init, ruleset; fps=8, store=true, processor=regionprocessor)#,  extrainit=extrainit,  #summaries=(costs,),
+Blink.AtomShell.@dot output.window webContents.setZoomFactor(1.0)
+
+output = Cellular.MuxServer(init, model; port=8000)
+
+using CellularAutomataGtk
+output = GtkOutput(init; fps=100, showmax_fps=10, processor=regionprocessor) 
