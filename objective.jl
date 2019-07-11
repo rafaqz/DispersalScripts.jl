@@ -6,9 +6,9 @@ struct OffsetRegionObjective{DT,RL,OC,FS,S} <: AbstractObjective
     start::S
 end
 
-targets(obj::OffsetRegionObjective) = obj.occurance
+Dispersal.targets(obj::OffsetRegionObjective) = obj.occurance
 
-simpredictions(obj::OffsetRegionObjective, simoutput) = begin
+Dispersal.simpredictions(obj::OffsetRegionObjective, simoutput) = begin
     nregions, nsteps = size(obj.occurance)
     nframes = length(simoutput)
     nsteps = ceil(Int, nframes / obj.framesperstep)
@@ -144,5 +144,5 @@ using Test
                       0 1 1
                       1 1 1]
 
-    @test prediction == simpredictions(objective, output)
+    @test prediction == Dispersal.simpredictions(objective, output)
 end

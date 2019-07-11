@@ -1,15 +1,16 @@
 # Load packages and raster files
 
-using Pkg: activate
-activate(".")
-using Revise, HDF5, CellularAutomataBase, Dispersal, Distributed, Flatten, LossFunctions,
-      FieldMetadata, Colors, Unitful, ColorSchemes, LabelledArrays, Statistics, Optim, LabelledArrays
-using Unitful: d
+@everywhere using Pkg: activate
+@everywhere activate(".")
+@everywhere using HDF5, Distributed, Statistics, Optim, ColorSchemes, Colors 
+@everywhere using CellularAutomataBase, Dispersal, Flatten, LossFunctions,
+      FieldMetadata, Unitful, LabelledArrays
+@everywhere using Unitful: d
 # using DataFrames, CSV, JLD2 # for saving outputs # 
 
 # Constants for all simulations
 
-include("setup_comparison_rulesets.jl")
+@everywhere include("setup_comparison_rulesets.jl")
 my_rulesets, init, tstop, objective = setup_comparison_rulesets("spread_inputs_US_SWD.h5");
 ruleset = my_rulesets.full
 ruleset = my_rulesets.noallee
@@ -26,11 +27,11 @@ optimresults = @LArray Vector(undef, length(my_rulesets)) keys(my_rulesets)
 sumstats = [:USloss,:USaccuracy, :EUloss, :EUaccuracy]
 paramnames = (union(fieldnameflatten.(getfield.(values(my_rulesets), :rules))...)...,)
 rulesetnames = keys(my_rulesets)
-rulesetname = rulesetnames[1]
+rulesetname = rulesetnames[4]
 transform = x -> 2x - 1
 loss = ZeroOneLoss()
 nreplicates = 10
-iterations = 1000
+iterations = 10
 
 
 for rulesetname in rulesetnames
@@ -47,7 +48,11 @@ for rulesetname in rulesetnames
     lims = metaflatten(ruleset.rules, FieldMetadata.limits, Union{Real,Quantity})
     lower = [l[1] for l in lims]
     upper = [l[2] for l in lims]
-    res = Optim.optimize(parametriser, lower, upper, namedparams, SAMIN(), Optim.Options(iterations=iterations))
+    @time res = Optim.optimize(parametriser, lower, upper, namedparams, SAMIN(), 
+                               Optim.Options(iterations=iterations,
+                                             show_trace=true,
+                                             store_trace=true
+                                            ))
     optimresults[rulesetname] = res
 end
 

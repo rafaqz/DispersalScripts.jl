@@ -14,10 +14,10 @@ setup_comparison_rulesets(datafile) = begin
     occurance = convert.(Bool, read(data["state_year_spread"]))
     regionlookup = convert.(Int, replace(read(data["x_y_state"]), NaN=>0))[:, :, 1]
     steps = size(occurance, 2)
-    tstop = steps * framesperstep
-    start = 5 # we start five months/frames in - in May, close to the first sighting. 
+    startmonth = 5 # we start five months/frames in - in May, close to the first sighting. 
                # January has strongly negative growth rates in San Jose.
-    objective = OffsetRegionObjective(detectionthreshold, regionlookup, occurance, framesperstep, start)
+    tstop = steps * framesperstep - startmonth + 1
+    objective = OffsetRegionObjective(detectionthreshold, regionlookup, occurance, framesperstep, startmonth)
 
 
     # Rules ###########################################################
@@ -83,7 +83,7 @@ setup_comparison_rulesets(datafile) = begin
     onlyhuman = Ruleset(humandisp; kwargs...)
 
     ((full=full, nolocal=nolocal, noallee=noallee, nohuman=nohuman, 
-      noclimate=noclimat), init, tstop, objective)
+      noclimate=noclimate), init, tstop, objective)
       # nolocalnoallee=nolocalnoallee, humangrowth=humangrowth, 
       # onlygrowth=onlygrowth, onlyhuman=onlyhuman), 
 end

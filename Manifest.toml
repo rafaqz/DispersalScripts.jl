@@ -219,9 +219,9 @@ version = "0.2.0"
 
 [[DataFrames]]
 deps = ["CategoricalArrays", "Compat", "IteratorInterfaceExtensions", "Missings", "PooledArrays", "Printf", "REPL", "Reexport", "SortingAlgorithms", "Statistics", "StatsBase", "TableTraits", "Tables", "Unicode"]
-git-tree-sha1 = "279baa6358fd5e944deccab88434f69c74cfc722"
+git-tree-sha1 = "7c0f86a01be0f77cc7f3f9096ed875f1217487e1"
 uuid = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
-version = "0.18.3"
+version = "0.18.4"
 
 [[DataStructures]]
 deps = ["InteractiveUtils", "OrderedCollections"]
@@ -262,9 +262,7 @@ version = "0.0.10"
 
 [[Dispersal]]
 deps = ["CellularAutomataBase", "Colors", "Distributed", "Distributions", "DocStringExtensions", "FieldDefaults", "FieldDocTables", "FieldMetadata", "Flatten", "LinearAlgebra", "LossFunctions", "Mixers", "Statistics"]
-git-tree-sha1 = "c1a9112947ce4aea255075d71358f9ecbfaec3f4"
-repo-rev = "master"
-repo-url = "https://github.com/rafaqz/Dispersal.jl"
+path = "/home/raf/julia/Dispersal"
 uuid = "8797f018-3445-11e9-3969-c13eb94a0661"
 version = "0.1.0"
 
