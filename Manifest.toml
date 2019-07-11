@@ -1,3 +1,5 @@
+# This file is machine-generated - editing it directly is not advised
+
 [[AbstractFFTs]]
 deps = ["LinearAlgebra"]
 git-tree-sha1 = "380e36c66edfa099cd90116b24c1ce8cafccac40"
@@ -262,7 +264,9 @@ version = "0.0.10"
 
 [[Dispersal]]
 deps = ["CellularAutomataBase", "Colors", "Distributed", "Distributions", "DocStringExtensions", "FieldDefaults", "FieldDocTables", "FieldMetadata", "Flatten", "LinearAlgebra", "LossFunctions", "Mixers", "Statistics"]
-path = "/home/raf/julia/Dispersal"
+git-tree-sha1 = "f36ef2916d34895069a17997fabf904610bd30aa"
+repo-rev = "master"
+repo-url = "https://github.com/rafaqz/Dispersal.jl"
 uuid = "8797f018-3445-11e9-3969-c13eb94a0661"
 version = "0.1.0"
 
@@ -273,7 +277,7 @@ uuid = "b4f34e82-e78d-54a5-968a-f98e89d6e8f7"
 version = "0.8.0"
 
 [[Distributed]]
-deps = ["LinearAlgebra", "Random", "Serialization", "Sockets"]
+deps = ["Random", "Serialization", "Sockets"]
 uuid = "8ba89e20-285c-5b6f-9357-94700520ee1b"
 
 [[Distributions]]
@@ -518,7 +522,7 @@ uuid = "7981ab7d-5bfa-5e03-9ec9-f3d4afc0a1ca"
 version = "0.6.1"
 
 [[InteractiveUtils]]
-deps = ["LinearAlgebra", "Markdown"]
+deps = ["Markdown"]
 uuid = "b77e0a4c-d291-57a0-90e8-8db25a27a240"
 
 [[Interpolations]]
@@ -981,7 +985,7 @@ uuid = "30578b45-9adc-5946-b283-645ec420af67"
 version = "0.4.0"
 
 [[UUIDs]]
-deps = ["Random"]
+deps = ["Random", "SHA"]
 uuid = "cf7118a7-6976-5b1a-9a39-7adc72f591a4"
 
 [[Unicode]]
