@@ -12,14 +12,13 @@ Dispersal.simpredictions(obj::OffsetRegionObjective, simoutput) = begin
     nregions, nsteps = size(obj.occurance)
     nframes = length(simoutput)
     nsteps = ceil(Int, nframes / obj.framesperstep)
-    # Allocate arrays for steps and set all cells to zero 
+    # Allocate arrays for steps and set all cells to zero
     steps = [zeros(Bool, size(simoutput[1])) for f in 1:nsteps]
-    fill!.(steps, zero(eltype(steps[1])))
 
     # Get the mean population for steps from the frames in each step:
     # First incomplete step
     firststep = 1:obj.framesperstep - obj.start + 1
-    for frame in firststep  
+    for frame in firststep
         steps[1] .|= poptoobs.(simoutput[frame], obj.detectionthreshold)
     end
     # Full steps
@@ -35,12 +34,13 @@ Dispersal.simpredictions(obj::OffsetRegionObjective, simoutput) = begin
 
     # Convert mean cell populations to regional prescence/absence
     for s in 1:nsteps
-        for r in 1:nregions
-            reg = celltoregion(obj.regionlookup, steps[s], r)
-            prediction[r, s] = reg
+        for i in CartesianIndices(steps[1])
+            if obj.regionlookup[i] > 0
+                prediction[obj.regionlookup[i], s] |= steps[s][i]
+            end
         end
     end
-    prediction 
+    prediction
 end
 
 
@@ -48,8 +48,8 @@ end
 poptoobs(pop, threshold) = pop >= threshold
 
 # Do any cells in the region contain observations
-celltoregion(regionlookup::AbstractArray, cells::AbstractArray, region_id) = 
-    any((regionlookup .== region_id) .& cells)
+# celltoregion!(regionbuffer, regionlookup::AbstractArray, cells::AbstractArray, region_id) =
+    # regionbuffer .= (regionlookup .== region_id) .& cells
 
 stepfromframe(framesperstep, start, t) = (t - 2one(t) + start) ÷ framesperstep + one(t)
 
@@ -70,38 +70,40 @@ using Test
     @test stepfromframe(3, 2, 8) == 3
 
     obs = zeros(Bool, 3, 3)
-    pop = [1.0 2.5 5.7 
+    pop = [1.0 2.5 5.7
            0.0 0.7 4.3
            2.3 2.9 3.0]
 
-    @test poptoobs.(pop, 2) == Bool[0 1 1
-                                    0 0 1
-                                    1 1 1]
+    # @test poptoobs.(pop, 2) == Bool[0 1 1
+    #                                 0 0 1
+    #                                 1 1 1]
 
-    @test poptoobs.(pop, 3) == Bool[0 0 1
-                                    0 0 1
-                                    0 0 1]
+    # @test poptoobs.(pop, 3) == Bool[0 0 1
+    #                                 0 0 1
+    #                                 0 0 1]
 
-    # Test celltoregion() for five regions using 2 thresholds
-    lookup = [2 2 3 
-              1 3 3
-              4 5 5]
+    # # Test celltoregion() for five regions using 2 thresholds
+    # lookup = [2 2 3
+    #           1 3 3
+    #           4 5 5]
 
-    step = poptoobs.(pop, 2)
-    @test celltoregion.(Ref(lookup), Ref(step), 1:5) == [false, true, true, true, true]
+    # buf = zeros(Bool, size(lookup))
 
-    step = poptoobs.(pop, 3)
-    @test celltoregion.(Ref(lookup), Ref(step), 1:5) == [false, false, true, false, true]
+    # step = poptoobs.(pop, 2)
+    # @test any.(celltoregion!.(Ref(buf), Ref(lookup), Ref(step), 1:5)) == [false, true, true, true, true]
+
+    # step = poptoobs.(pop, 3)
+    # @test any.(celltoregion!.(Ref(buf), Ref(lookup), Ref(step), 1:5)) == [false, false, true, false, true]
 
     # Only used for dimensions, not data
-    occurance = [0 0 0 
+    occurance = [0 0 0
                  0 0 0
                  0 0 0
                  0 0 0
                  0 0 0]
 
     output = [
-              [0.0 0.0 0.0  
+              [0.0 0.0 0.0
                0.0 0.0 0.0
                0.0 0.0 0.3],
               [0.0 0.0 0.0
@@ -127,7 +129,7 @@ using Test
                2.0 3.0 4.0]
              ]
 
-    lookup = [2 2 3 
+    lookup = [2 2 3
               1 3 3
               4 5 5]
 
@@ -138,7 +140,7 @@ using Test
     objective = OffsetRegionObjective(detectionthreshold, lookup, occurance, framesperstep, start)
     obj = objective
     simoutput = output
-    prediction = Bool[0 0 0 
+    prediction = Bool[0 0 0
                       0 0 1
                       0 1 0
                       0 1 1
