@@ -1,7 +1,6 @@
 # data = h5open("spread_inputs_US.h5", "r")
 
-import FieldMetadata: @relimits, limits
-import Flatten: @reflattenable flatten
+import FieldMetadata: @relimits, limits, @reflattenable, flattenable
 
 
 # Human
@@ -21,11 +20,11 @@ end
 end
 # Kernel
 @relimits struct ExponentialKernel
-    λ | (0.0, 0.8)
+    λ | (0.0, 0.1)
 end
 # Alee
 @relimits struct AlleeExtinction
-    minfounders | (1e0, 1e3)
+    minfounders | (2e0, 1e3)
 end
 
 FloatType = Float32
@@ -36,8 +35,12 @@ floatconvert(x::Number) = convert(FloatType, x)
 setup_comparison_rulesets(datafile) = begin
     data = h5open(datafile, "r")
     cellsize = floatconvert(1.0)
-    init = Dispersal.downsample(floatconvert(read(data["x_y_initial"]) .* 10000000), mean, Int(cellsize)) # Arbitrary initial condition
-    masklayer = BitArray(replace(x -> isnan(x) ? 0 : 1, Dispersal.downsample(read(data["x_y_popdens"])[:, :, 1], mean, Int(cellsize))))
+    init = floatconvert(read(data["x_y_initial"]) .* 1e7) # Arbitrary initial condition
+    # init = floatconvert(read(data["x_y_initial"])["melbourne"] .* 1e7) # Arbitrary initial condition
+    # init = floatconvert(read(data["x_y_initial"])["seisia"] .* 1e9) # Arbitrary initial condition
+    # init = floatconvert(read(data["x_y_initial"])["cairns"] .* 1e9) # Arbitrary initial condition
+    # init = floatconvert(read(data["x_y_initial"])["brisbane"] .* 1e7) # Arbitrary initial condition
+    masklayer = BitArray(replace(x -> isnan(x) ? 0 : 1, read(data["x_y_popdens"])[:, :, 1]))
     month = floatconvert(365.25)d/12
     simtimestep = month
     framesperstep = 12
@@ -48,7 +51,7 @@ setup_comparison_rulesets(datafile) = begin
     regionlookup = convert.(Int, replace(read(data["x_y_state"]), NaN=>0))[:, :, 1]
     steps = size(occurance, 2)
     startmonth = 5 # we start five months/frames in - in May, close to the first sighting.
-               # January has strongly negative growth rates in San Jose.
+                   # January has strongly negative growth rates in San Jose.
     tstop = steps * framesperstep - startmonth + 1
     objective = RegionObjective(detectionthreshold, regionlookup, occurance, framesperstep, startmonth)
 
@@ -56,9 +59,9 @@ setup_comparison_rulesets(datafile) = begin
     # Rules ###########################################################
 
 
+    # Human dispersal
     human_pop = replace(floatconvert.(read(data["x_y_popdens"])), NaN=>missing)
-    display(human_pop[100:300,100:300])
-    scale = 8
+    scale = 4
     aggregator = mean
     human_exponent = floatconvert(2.0)
     dist_exponent = floatconvert(2.0)
@@ -69,17 +72,19 @@ setup_comparison_rulesets(datafile) = begin
                                      max_dispersers=max_dispersers, cellsize=cellsize, human_exponent=human_exponent,
                                      dist_exponent=dist_exponent, timestep=simtimestep)
 
+    # Constant growth
     constant_growth = ExactLogisticGrowth(intrinsicrate=0.1d^-1)
 
     # Climate driven growth
     carrycap = floatconvert(1e8)
     pg = replace(read(data["x_y_month_intrinsicGrowthRate"]), NaN=>0)
-    popgrowth = [Dispersal.downsample(floatconvert(pg[:, :, i]), mean, Int(cellsize)) for i in 1:size(pg, 3)]
+    popgrowth = [floatconvert(pg[:, :, i]) for i in 1:size(pg, 3)]
     popgrowth = vcat(popgrowth[6:12], popgrowth[1:5])
     # Convert growth arrays to units
     growth_layers = Sequence(popgrowth .* d^-1, month);
     growth = SuitabilityExactLogisticGrowth(layers=growth_layers, carrycap=carrycap);
 
+    # Local dispersal
     λ = floatconvert(0.05)
     radius = 3
     sze = 2radius + 1
@@ -88,32 +93,20 @@ setup_comparison_rulesets(datafile) = begin
     localdisp = InwardsPopulationDispersal(hood)
     display(hood.kernel .* carrycap)
 
-    minfounders = floatconvert(5.0)
+    # Allee effects
+    minfounders = floatconvert(2.0)
     allee = AlleeExtinction(minfounders=minfounders)
 
 
     # Define combinations for comparison  ##########################
     kwargs = (init=init, mask=masklayer, timestep=simtimestep, minval=0.0, maxval=carrycap)
-    nolocal = Ruleset(humandisp, (allee, growth); kwargs...)
+
+    nolocal = Ruleset(humandisp, allee, growth; kwargs...)
     noallee = Ruleset(humandisp, (localdisp, growth); kwargs...)
     noclimate = Ruleset(humandisp, (localdisp, allee, constant_growth); kwargs...)
     nohuman = Ruleset((localdisp, allee, growth); kwargs...)
     full = Ruleset(humandisp, (localdisp, allee, growth); kwargs...)
 
-    # Manual
-    kwargs = (init=init, timestep=simtimestep, minval=0.0, maxval=carrycap)
-    ruleset = Ruleset(growth; kwargs...)
-    ruleset = Ruleset(constant_growth; kwargs...)
-    ruleset = Ruleset(humandisp; kwargs...)
-    ruleset = Ruleset(growth; kwargs...)
-    ruleset = Ruleset(humandisp, growth; kwargs...)
-    ruleset = Ruleset(localdisp; kwargs...)
-    ruleset = Ruleset(localdisp, allee; kwargs...)
-    ruleset = Ruleset(humandisp, (growth, allee); kwargs...)
-    ruleset = Ruleset((localdisp, growth, allee); kwargs...)
-
     ((full=full, nolocal=nolocal, noallee=noallee, nohuman=nohuman,
       noclimate=noclimate), init, tstop, objective)
-      # nolocalnoallee=nolocalnoallee, humangrowth=humangrowth,
-      # onlygrowth=onlygrowth, onlyhuman=onlyhuman),
 end
