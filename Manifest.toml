@@ -65,9 +65,9 @@ version = "0.2.3"
 
 [[CSTParser]]
 deps = ["Tokenize"]
-git-tree-sha1 = "0ff80f68f55fcde2ed98d7b24d7abaf20727f3f8"
+git-tree-sha1 = "c69698c3d4a7255bc1b4bc2afc09f59db910243b"
 uuid = "00ebfdb7-1f24-5e51-bd34-a7502290713f"
-version = "0.6.1"
+version = "0.6.2"
 
 [[CSV]]
 deps = ["CategoricalArrays", "DataFrames", "Dates", "Mmap", "Parsers", "PooledArrays", "Profile", "Tables", "Unicode", "WeakRefStrings"]
@@ -108,10 +108,10 @@ uuid = "da1fd8a2-8d9e-5ec2-8556-3022fb5608a2"
 version = "0.5.7"
 
 [[CodecZlib]]
-deps = ["BinaryProvider", "Libdl", "Test", "TranscodingStreams"]
-git-tree-sha1 = "36bbf5374c661054d41410dc53ff752972583b9b"
+deps = ["BinaryProvider", "Libdl", "TranscodingStreams"]
+git-tree-sha1 = "05916673a2627dd91b4969ff8ba6941bc85a960e"
 uuid = "944b1d66-785c-5afd-91f1-9de20f533193"
-version = "0.5.2"
+version = "0.6.0"
 
 [[ColorSchemes]]
 deps = ["Colors", "Random", "Test"]
@@ -192,10 +192,10 @@ deps = ["Mmap"]
 uuid = "8bb1440f-4735-579b-a4ab-409b98df4dab"
 
 [[DiffEqDiffTools]]
-deps = ["ArrayInterface", "LinearAlgebra", "SparseArrays", "StaticArrays"]
-git-tree-sha1 = "d6582a0e9e26a6453a4c03f2837b1049f7007a3f"
+deps = ["ArrayInterface", "LinearAlgebra", "Requires", "SparseArrays", "StaticArrays"]
+git-tree-sha1 = "21b855cb29ec4594f9651e0e9bdc0cdcfdcd52c1"
 uuid = "01453d9d-ee7c-5054-8395-0335cb756afa"
-version = "1.2.0"
+version = "1.3.0"
 
 [[DiffResults]]
 deps = ["Compat", "StaticArrays"]
@@ -211,7 +211,7 @@ version = "0.0.10"
 
 [[Dispersal]]
 deps = ["CellularAutomataBase", "Colors", "Distributed", "DocStringExtensions", "FieldDefaults", "FieldDocTables", "FieldMetadata", "Flatten", "LinearAlgebra", "LossFunctions", "Mixers", "PoissonRandom", "Statistics"]
-git-tree-sha1 = "e7a8c466d7628ee2b2a586684583f92cdf825df8"
+git-tree-sha1 = "1864f4c1c0558700deaa8815f23fff932a96c56e"
 repo-rev = "master"
 repo-url = "https://github.com/rafaqz/Dispersal.jl"
 uuid = "8797f018-3445-11e9-3969-c13eb94a0661"
@@ -532,9 +532,9 @@ version = "1.1.0"
 
 [[PDMats]]
 deps = ["Arpack", "LinearAlgebra", "SparseArrays", "SuiteSparse", "Test"]
-git-tree-sha1 = "8b68513175b2dc4023a564cb0e917ce90e74fd69"
+git-tree-sha1 = "f99548922adf8dd5df2f02ab0063944201a12ed8"
 uuid = "90014a1f-27ba-587c-ab20-58faa44d9150"
-version = "0.9.7"
+version = "0.9.8"
 
 [[PaddedViews]]
 deps = ["OffsetArrays", "Test"]

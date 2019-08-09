@@ -41,7 +41,7 @@ processor = ColorProcessor(ColorSchemes.PuRd_3, zerocolor, maskcolor)
 using CellularAutomataGtk
 output = GtkOutput(init .* 0; fps=6, showfps=20, store=true, processor=processor)
 output.processor = processor
-output.fps = 20
+output.fps = 6 
 output.running = false
 @time sim!(output, ruleset; tstop=72)
 
@@ -61,6 +61,6 @@ output.running = false
 
 @time for i in 1:10 sim!(output, ruleset; tstop=68) end
 
-savegif("vlm_cairns.gif", output, ruleset; fps=6)
+savegif("sim.gif", output, ruleset; fps=6)
 
 
