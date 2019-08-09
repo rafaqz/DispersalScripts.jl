@@ -32,7 +32,7 @@ sim_rulesets, init, tstop, objective, output = setup_comparison_rulesets(datafil
 
 optimresults = @LArray Vector(undef, length(sim_rulesets)) keys(sim_rulesets)
 transformfunc = x -> 2x - 1
-loss = ZeroOneLoss()
+lossfunc = ZeroOneLoss()
 # threading = Dispersal.DistributedReplicates()
 # threading = Dispersal.SingleCoreReplicates()
 threading = Dispersal.ThreadedReplicates()
@@ -49,7 +49,7 @@ for rulesetkey in keys(sim_rulesets)
     # Make a labelled array so we can ignore the order
     namedparams = @LArray pars parnames
     show(namedparams)
-    parametriser = Parametriser(ruleset, output, objective, transformfunc, loss, ngroups, groupsize, tstop, threading)
+    parametriser = Parametriser(ruleset, output, objective, transformfunc, lossfunc, ngroups, groupsize, tstop, threading)
     # Get the lower and upper limits for params with flatten
     lims = metaflatten(ruleset.rules, FieldMetadata.limits, Union{Real,Quantity})
     lower = [l[1] for l in lims]
@@ -85,6 +85,7 @@ insert!(paramdf, 3, upper, :upperbound)
 sumstats = [:USloss, :USaccuracy, :EUloss, :EUaccuracy]
 resultdf = DataFrame(map(k -> k=>zeros(length(sumstats)), keys(optimresults))...)
 insert!(resultdf, 1, sumstats, :stat)
+accuracy(parametriser, loss) = one(loss) - loss/length(Dispersal.targetbuffer(parametriser))
 
 
 # Loss and accuracy for the USA
@@ -101,13 +102,11 @@ for rulesetkey in keys(optimresults)
         paramdf[rulesetkey][paramkey] = pars[paramkey]
     end
     # Fill out the loss for the USA
-    resultdf[rulesetkey][findfirst(x->x==:USloss, sumstats)] =
-        Optim.minimum(optimresults[rulesetkey])
+    loss = Optim.minimum(optimresults[rulesetkey])
+    resultdf[rulesetkey][findfirst(x->x==:USloss, sumstats)] = loss
     # Fill out the accuracy for the USA
-    accuracy_parametriser = Parametriser(ruleset, output, objective, transformfunc, 
-                                         Accuracy(), ngroups, groupsize, tstop, threading)
     resultdf[rulesetkey][findfirst(x->x==:USaccuracy, sumstats)] =
-        accuracy_parametriser(pars)
+        accuracy(parametriser, loss)
 end
 
 # Loss and accuracy for the EU
@@ -129,14 +128,12 @@ for rulesetkey in keys(sim_rulesets)
     ruleset.rules = reconstruct(ruleset.rules, pars .* 0)
     # Fill out the loss for the USA
     parametriser = Parametriser(sim_rulesets[rulesetkey], output, objective, transformfunc, 
-                                loss, ngroups, groupsize, tstop, threading)
-    resultdf[rulesetkey][findfirst(x->x==:EUloss, sumstats)] =
-        parametriser(Optim.minimizer(optimresults[rulesetkey]))
+                                lossfunc, ngroups, groupsize, tstop, threading)
+    loss = parametriser(Optim.minimizer(optimresults[rulesetkey]))
+    resultdf[rulesetkey][findfirst(x->x==:EUloss, sumstats)] = loss
     # Fill out the accuracy for the USA
-    accuracy_parametriser = Parametriser(sim_rulesets[rulesetkey], output, objective, transformfunc, 
-                                         Accuracy(), ngroups, groupsize, tstop, threading)
     resultdf[rulesetkey][findfirst(x->x==:EUaccuracy, sumstats)] =
-        accuracy_parametriser(pars)
+        accuracy(parametriser, loss)
 end
 
 
