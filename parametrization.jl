@@ -14,11 +14,16 @@ Threads.nthreads()
 include("setup_comparison_rulesets.jl")
 datafile = "spread_inputs_US_SWD.h5"
 sim_rulesets, init, tstop, objective, output = setup_comparison_rulesets(datafile);
+transformfunc = x -> 2x - 1
+lossfunc = ZeroOneLoss()
 
 # @save "lowlambda.jld2" res
 # @save "lowlambda_highres.jld2" res
-# @load "lowlambda.jld2" res
-# ruleset.rules = reconstruct(ruleset.rules, Optim.minimizer(optimresults[:full]))
+rulesetkey = :nohuman
+ruleset = sim_rulesets[rulesetkey]
+ruleset.rules[2][1]
+@load "optimresults_server.jld2" optimresults
+ruleset.rules = reconstruct(ruleset.rules, Optim.minimizer(optimresults[rulesetkey]))
 # @time pars = flatten(ruleset.rules)
 # parametriser = Parametriser(ruleset, output, objective, transformfunc, loss, ngroups, groupsize, tstop, threading)
 # @time parametriser(pars)
@@ -31,17 +36,17 @@ sim_rulesets, init, tstop, objective, output = setup_comparison_rulesets(datafil
 # optimresults = @LArray out keys(sim_rulesets)
 
 optimresults = @LArray Vector(undef, length(sim_rulesets)) keys(sim_rulesets)
-transformfunc = x -> 2x - 1
-lossfunc = ZeroOneLoss()
 # threading = Dispersal.DistributedReplicates()
-# threading = Dispersal.SingleCoreReplicates()
-threading = Dispersal.ThreadedReplicates()
-groupsize = 3
-ngroups = 2
-iterations = 4
+threading = Dispersal.SingleCoreReplicates()
+# threading = Dispersal.ThreadedReplicates()
+groupsize = 10
+ngroups = 3
+iterations = 1
 
-for rulesetkey in keys(sim_rulesets)
-    println(rulesetkey)
+output.running = false
+simlosses = @LArray [zeros(groupsize * ngroups) for r in 1:length(sim_rulesets)] keys(sim_rulesets)
+for rulesetkey in keys(sim_rulesets)[5:5]
+    println("model: ", rulesetkey)
     ruleset = sim_rulesets[rulesetkey]
     pars = [flatten(ruleset.rules)...]
     ruleset.rules = reconstruct(ruleset.rules, pars .* 0)
@@ -60,14 +65,15 @@ for rulesetkey in keys(sim_rulesets)
                                        store_trace=true
                                       ))
     optimresults[rulesetkey] = res
+    simlosses[rulesetkey] = reduce(vcat, parametriser.results)
 end
 
 
-
 # @save "optimresults1.jld2" optimresults
-
 # @load "optimresults1.jld2" optimresults
+# optimresults[:full] = res
 # Parameter estimates datafram
+
 allparams = Optim.minimizer(optimresults[:full])
 paramnames = symbols(allparams)
 r = Optim.minimizer(optimresults[:full])
@@ -82,14 +88,15 @@ insert!(paramdf, 2, lower, :lowerbound)
 insert!(paramdf, 3, upper, :upperbound)
 
 # Loss/accuracy results dataframe
-sumstats = [:USloss, :USaccuracy, :EUloss, :EUaccuracy]
+sumstats = [:USloss, :USstd, :USaccuracy, :EUloss, :EUstd, :EUaccuracy]
 resultdf = DataFrame(map(k -> k=>zeros(length(sumstats)), keys(optimresults))...)
 insert!(resultdf, 1, sumstats, :stat)
-accuracy(parametriser, loss) = one(loss) - loss/length(Dispersal.targetbuffer(parametriser))
+accuracy(target, loss) = one(loss) - loss/length(target)
 
 
+output.running = false
 # Loss and accuracy for the USA
-for rulesetkey in keys(optimresults)
+for rulesetkey in keys(optimresults)[5:5]
     println(rulesetkey)
     pars = Optim.minimizer(optimresults[rulesetkey])
     println(pars)
@@ -102,12 +109,16 @@ for rulesetkey in keys(optimresults)
         paramdf[rulesetkey][paramkey] = pars[paramkey]
     end
     # Fill out the loss for the USA
-    loss = Optim.minimum(optimresults[rulesetkey])
+    parametriser = Parametriser(ruleset, output, objective, transformfunc, 
+                                lossfunc, ngroups, groupsize, tstop, threading)
+    loss = parametriser(pars)
     resultdf[rulesetkey][findfirst(x->x==:USloss, sumstats)] = loss
+    resultdf[rulesetkey][findfirst(x->x==:USstd, sumstats)] = std(vcat(parametriser.results...))
     # Fill out the accuracy for the USA
     resultdf[rulesetkey][findfirst(x->x==:USaccuracy, sumstats)] =
-        accuracy(parametriser, loss)
+        accuracy(Dispersal.targets(objective), loss)
 end
+
 
 # Loss and accuracy for the EU
 include("setup_comparison_rulesets.jl")
@@ -115,27 +126,26 @@ datafile = "spread_inputs_EU_SWD.h5"
 # datafile = "spread_inputs_Aus_SWD.h5"
 # datafile = "spread_inputs_Aus_VLM.h5"
 sim_rulesets, init, tstop, objective, output = setup_comparison_rulesets(datafile)
-rulesetkey = :full
+rulesetkey = :noclimate
 ruleset = sim_rulesets[rulesetkey]
 ruleset.rules = reconstruct(ruleset.rules, Optim.minimizer(optimresults[rulesetkey]))
 
-for rulesetkey in keys(sim_rulesets)
+for rulesetkey in keys(optimresults)
     println(rulesetkey)
-    ruleset = sim_rulesets[rulesetkey]
     pars = Optim.minimizer(optimresults[rulesetkey])
     # Set the parameters to zero, to make sure they are updated in the optimizer
     ruleset = sim_rulesets[rulesetkey]
     ruleset.rules = reconstruct(ruleset.rules, pars .* 0)
     # Fill out the loss for the USA
-    parametriser = Parametriser(sim_rulesets[rulesetkey], output, objective, transformfunc, 
+    parametriser = Parametriser(ruleset, output, objective, transformfunc, 
                                 lossfunc, ngroups, groupsize, tstop, threading)
-    loss = parametriser(Optim.minimizer(optimresults[rulesetkey]))
+    loss = parametriser(pars)
     resultdf[rulesetkey][findfirst(x->x==:EUloss, sumstats)] = loss
+    resultdf[rulesetkey][findfirst(x->x==:EUstd, sumstats)] = std(vcat(parametriser.results...))
     # Fill out the accuracy for the USA
     resultdf[rulesetkey][findfirst(x->x==:EUaccuracy, sumstats)] =
-        accuracy(parametriser, loss)
+        accuracy(Dispersal.targets(objective), loss)
 end
-
 
 resultdf
 paramdf

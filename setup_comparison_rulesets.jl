@@ -33,14 +33,14 @@ floatconvert(a::AbstractArray) = convert(Array{FloatType,2}, a)
 floatconvert(x::Number) = convert(FloatType, x)
 
 setup_comparison_rulesets(datafile) = begin
+
     data = h5open(datafile, "r")
-    cellsize = floatconvert(1.0)
-    init = floatconvert(read(data["x_y_initial"]) .* 1e7) # Arbitrary initial condition
+    init = floatconvert(read(data["x_y_initial"]) .* 1e9) # Arbitrary initial condition
     # init = floatconvert(read(data["x_y_initial"])["melbourne"] .* 1e7) # Arbitrary initial condition
     # init = floatconvert(read(data["x_y_initial"])["seisia"] .* 1e9) # Arbitrary initial condition
     # init = floatconvert(read(data["x_y_initial"])["cairns"] .* 1e9) # Arbitrary initial condition
     # init = floatconvert(read(data["x_y_initial"])["brisbane"] .* 1e7) # Arbitrary initial condition
-    masklayer = BitArray(replace(x -> isnan(x) ? 0 : 1, read(data["x_y_popdens"])[:, :, 1]))
+    cellsize = floatconvert(1.0)
     month = floatconvert(365.25)d/12
     simtimestep = month
     framesperstep = 12
@@ -62,7 +62,7 @@ setup_comparison_rulesets(datafile) = begin
 
     # Human dispersal
     human_pop = replace(floatconvert.(read(data["x_y_popdens"])), NaN=>missing)
-    scale = 4
+    scale = 8
     aggregator = mean
     human_exponent = floatconvert(2.0)
     dist_exponent = floatconvert(2.0)
@@ -89,15 +89,38 @@ setup_comparison_rulesets(datafile) = begin
     λ = floatconvert(0.05)
     radius = 3
     sze = 2radius + 1
-    hood = DispersalKernel{radius}(;kernel=zeros(FloatType, radius, radius), cellsize=cellsize,
-                           formulation=ExponentialKernel(λ))
+
+    # buildhood(dm) = begin
+    #     hood = DispersalKernel{radius}(;kernel=zeros(FloatType, radius, radius), cellsize=cellsize,
+    #                                    formulation=ExponentialKernel(λ), distancemethod=dm)
+    #     hood.kernel .* carrycap
+    # end
+    # using Plots
+    # p = plot();
+    # plot!(p, buildhood(CentroidToCentroid())[radius+1, :]; label="centroid")
+    # subsample = [2, 5, 10, 20, 30]
+    # ss = 10
+    # for ss in subsample
+    #     plot!(p, buildhood(AreaToArea(ss))[radius+1, :]; label=ss)
+    # end
+    # plot(p)
+    # heatmap(log.(buildhood(AreaToArea(10))))
+
+    # heatmap(log.(hood.kernel .* carrycap))
+    dm = CentroidToCentroid()
+    dm = AreaToArea(30)
+    @time hood = DispersalKernel{radius}(;kernel=zeros(FloatType, radius, radius), cellsize=cellsize,
+                                   formulation=ExponentialKernel(λ), distancemethod=dm)
     localdisp = InwardsPopulationDispersal(hood)
-    display(hood.kernel .* carrycap)
+    display(hood.kernel * carrycap)
 
     # Allee effects
     minfounders = floatconvert(2.0)
     allee = AlleeExtinction(minfounders=minfounders)
 
+    # Mask
+    masksource = read(data["x_y_month_intrinsicGrowthRate"])[:, :, 1]
+    masklayer = BitArray(replace(x -> isnan(x) ? 0 : 1, masksource))
 
     # Define combinations for comparison  ##########################
     kwargs = (init=init, mask=masklayer, timestep=simtimestep, minval=0.0, maxval=carrycap)
@@ -107,6 +130,7 @@ setup_comparison_rulesets(datafile) = begin
     noallee = Ruleset(humandisp, (localdisp, growth); kwargs...)
     nohuman = Ruleset((localdisp, allee, growth); kwargs...)
     noclimate = Ruleset(humandisp, (localdisp, allee, constant_growth); kwargs...)
+    ruleset = Ruleset((localdisp, growth); kwargs...)
 
     ((full=full, nolocal=nolocal, noallee=noallee, nohuman=nohuman,
       noclimate=noclimate), init, tstop, objective, output)

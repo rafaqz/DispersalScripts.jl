@@ -37,7 +37,7 @@ start_date = Date("2016-01-01")
 end_date = Date("2016-12-31")
 # end_date = Date("2016-02-28")
 data_path = "/home/raf/Storage/drosophila/climate/SMAP_raw/" # raw climatic data
-source=SMAP()
+source = SMAP()
 models = (ipgrowth, cold, hot, wilt)
 
 stresses = @time growthrates(models, data_path, start_date, end_date, 365.25d/12)
