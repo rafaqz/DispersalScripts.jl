@@ -71,9 +71,9 @@ version = "0.6.2"
 
 [[CSV]]
 deps = ["CategoricalArrays", "DataFrames", "Dates", "Mmap", "Parsers", "PooledArrays", "Profile", "Tables", "Unicode", "WeakRefStrings"]
-git-tree-sha1 = "a7df9250dff3aba96436580dd6ac00d712364cab"
+git-tree-sha1 = "35205137ee2f5a9c1f358407e9ed0f1a17878919"
 uuid = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
-version = "0.5.9"
+version = "0.5.11"
 
 [[Cairo]]
 deps = ["BinDeps", "Colors", "Compat", "Graphics", "Homebrew", "Libdl", "Pkg", "WinRPM"]
@@ -126,10 +126,10 @@ uuid = "3da002f7-5984-5a60-b8a6-cbb66c0b333f"
 version = "0.8.0"
 
 [[Colors]]
-deps = ["ColorTypes", "FixedPointNumbers", "InteractiveUtils", "Printf", "Reexport", "Test"]
-git-tree-sha1 = "9f0a0210450acb91c730b730a994f8eef1d3d543"
+deps = ["ColorTypes", "FixedPointNumbers", "InteractiveUtils", "Printf", "Reexport"]
+git-tree-sha1 = "c9c1845d6bf22e34738bee65c357a69f416ed5d1"
 uuid = "5ae59095-9a9b-59fe-a467-6f913c188581"
-version = "0.9.5"
+version = "0.9.6"
 
 [[CommonSubexpressions]]
 deps = ["Test"]
@@ -168,9 +168,9 @@ version = "1.0.1"
 
 [[DataFrames]]
 deps = ["CategoricalArrays", "Compat", "DataAPI", "InvertedIndices", "IteratorInterfaceExtensions", "Missings", "PooledArrays", "Printf", "REPL", "Reexport", "SortingAlgorithms", "Statistics", "TableTraits", "Tables", "Unicode"]
-git-tree-sha1 = "12a96f70fc126f8a308eadd4eda843dfa630bbd4"
+git-tree-sha1 = "48ef38bd7cf0e8fd598bda981409eb6ef4b96cbd"
 uuid = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
-version = "0.19.1"
+version = "0.19.2"
 
 [[DataStructures]]
 deps = ["InteractiveUtils", "OrderedCollections"]
@@ -211,7 +211,7 @@ version = "0.0.10"
 
 [[Dispersal]]
 deps = ["CellularAutomataBase", "Colors", "Distributed", "DocStringExtensions", "FieldDefaults", "FieldDocTables", "FieldMetadata", "Flatten", "LinearAlgebra", "LossFunctions", "Mixers", "PoissonRandom", "Statistics"]
-git-tree-sha1 = "2067c619f9dc502fd780f0207c6c268f50f29575"
+git-tree-sha1 = "51de144fff7141bd7e78f39262166e6d4b58a3a0"
 repo-rev = "master"
 repo-url = "https://github.com/rafaqz/Dispersal.jl"
 uuid = "8797f018-3445-11e9-3969-c13eb94a0661"
@@ -322,11 +322,11 @@ version = "0.17.0"
 
 [[HDF5]]
 deps = ["BinaryProvider", "Blosc", "Libdl", "Mmap"]
-git-tree-sha1 = "635ae44613c8c8dcf5d5b0084bfa00abea498e1f"
+git-tree-sha1 = "78f60c7c49e1950b786f530c785d44009b36c99f"
 repo-rev = "master"
 repo-url = "https://github.com/JuliaIO/HDF5.jl"
 uuid = "f67ccb44-e63f-5c2f-98bd-6dc0ccc4ba2f"
-version = "0.12.0"
+version = "0.12.1"
 
 [[HTTP]]
 deps = ["Base64", "Dates", "IniFile", "MbedTLS", "Sockets"]
@@ -393,9 +393,9 @@ version = "0.21.0"
 
 [[JuliaInterpreter]]
 deps = ["CodeTracking", "InteractiveUtils", "Random", "UUIDs"]
-git-tree-sha1 = "fd92b23285fb16884bbe54d4516615c6bf550adb"
+git-tree-sha1 = "a4bb251f96cb22141cff4185b724c2e4f46245d2"
 uuid = "aa1ae85d-cabe-5617-a682-6adf51b2e16a"
-version = "0.6.1"
+version = "0.7.0"
 
 [[LabelledArrays]]
 deps = ["LinearAlgebra", "StaticArrays"]
@@ -622,9 +622,9 @@ version = "0.5.2"
 
 [[Revise]]
 deps = ["CodeTracking", "Distributed", "FileWatching", "JuliaInterpreter", "LibGit2", "LoweredCodeUtils", "OrderedCollections", "Pkg", "REPL", "UUIDs", "Unicode"]
-git-tree-sha1 = "09cbf077a36bf58e7d5d2b026bb2af8c92931993"
+git-tree-sha1 = "f0d18f8b5199150dd9ced1cc6f9200b167fbb4d9"
 uuid = "295af30f-e4ad-537b-8983-00126c2a3abe"
-version = "2.1.6"
+version = "2.1.7"
 
 [[Rmath]]
 deps = ["BinaryProvider", "Libdl", "Random", "Statistics", "Test"]
