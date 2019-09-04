@@ -12,18 +12,18 @@ Threads.nthreads()
 
 # Load simualtions for USA
 include("setup_comparison_rulesets.jl")
-datafile = "spread_inputs_US_SWD.h5"
+datafile = "spread_inputs_US_cleaned.h5"
 sim_rulesets, init, tstop, objective, output = setup_comparison_rulesets(datafile);
 transformfunc = x -> 2x - 1
 lossfunc = ZeroOneLoss()
 
 # @save "lowlambda.jld2" res
 # @save "lowlambda_highres.jld2" res
-rulesetkey = :nohuman
+rulesetkey = :full
 ruleset = sim_rulesets[rulesetkey]
-ruleset.rules[2][1]
-@load "optimresults_server.jld2" optimresults
 ruleset.rules = reconstruct(ruleset.rules, Optim.minimizer(optimresults[rulesetkey]))
+# @load "optimresults2019-08-21T19:27:27.351 .jld2" optimresults
+# optimresults
 # @time pars = flatten(ruleset.rules)
 # parametriser = Parametriser(ruleset, output, objective, transformfunc, loss, ngroups, groupsize, tstop, threading)
 # @time parametriser(pars)
@@ -37,15 +37,15 @@ ruleset.rules = reconstruct(ruleset.rules, Optim.minimizer(optimresults[rulesetk
 
 optimresults = @LArray Vector(undef, length(sim_rulesets)) keys(sim_rulesets)
 # threading = Dispersal.DistributedReplicates()
-threading = Dispersal.SingleCoreReplicates()
-# threading = Dispersal.ThreadedReplicates()
-groupsize = 10
+# threading = Dispersal.SingleCoreReplicates()
+threading = Dispersal.ThreadedReplicates()
+groupsize = 40
 ngroups = 3
-iterations = 1
+iterations = 1000
 
 output.running = false
 simlosses = @LArray [zeros(groupsize * ngroups) for r in 1:length(sim_rulesets)] keys(sim_rulesets)
-for rulesetkey in keys(sim_rulesets)[5:5]
+for rulesetkey in keys(sim_rulesets)
     println("model: ", rulesetkey)
     ruleset = sim_rulesets[rulesetkey]
     pars = [flatten(ruleset.rules)...]
@@ -70,7 +70,7 @@ end
 
 
 # @save "optimresults1.jld2" optimresults
-# @load "optimresults1.jld2" optimresults
+@load "optimresults_latest.jld2" optimresults
 # optimresults[:full] = res
 # Parameter estimates datafram
 
@@ -93,10 +93,9 @@ resultdf = DataFrame(map(k -> k=>zeros(length(sumstats)), keys(optimresults))...
 insert!(resultdf, 1, sumstats, :stat)
 accuracy(target, loss) = one(loss) - loss/length(target)
 
-
 output.running = false
 # Loss and accuracy for the USA
-for rulesetkey in keys(optimresults)[5:5]
+for rulesetkey in keys(optimresults)
     println(rulesetkey)
     pars = Optim.minimizer(optimresults[rulesetkey])
     println(pars)
@@ -122,11 +121,11 @@ end
 
 # Loss and accuracy for the EU
 include("setup_comparison_rulesets.jl")
-datafile = "spread_inputs_EU_SWD.h5"
+datafile = "spread_inputs_EU_cleaned.h5"
 # datafile = "spread_inputs_Aus_SWD.h5"
 # datafile = "spread_inputs_Aus_VLM.h5"
 sim_rulesets, init, tstop, objective, output = setup_comparison_rulesets(datafile)
-rulesetkey = :noclimate
+rulesetkey = :full
 ruleset = sim_rulesets[rulesetkey]
 ruleset.rules = reconstruct(ruleset.rules, Optim.minimizer(optimresults[rulesetkey]))
 
@@ -135,8 +134,7 @@ for rulesetkey in keys(optimresults)
     pars = Optim.minimizer(optimresults[rulesetkey])
     # Set the parameters to zero, to make sure they are updated in the optimizer
     ruleset = sim_rulesets[rulesetkey]
-    ruleset.rules = reconstruct(ruleset.rules, pars .* 0)
-    # Fill out the loss for the USA
+    ruleset.rules = reconstruct(ruleset.rules, pars .* 0) # Fill out the loss for the USA
     parametriser = Parametriser(ruleset, output, objective, transformfunc, 
                                 lossfunc, ngroups, groupsize, tstop, threading)
     loss = parametriser(pars)

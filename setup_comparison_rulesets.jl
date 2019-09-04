@@ -8,7 +8,7 @@ import FieldMetadata: @relimits, limits, @reflattenable, flattenable
     human_exponent  | (0.0, 3.0)
     dist_exponent   | (0.0, 3.0)
     dispersalperpop | (0.0, 1e-8)
-    max_dispersers  | (1e1, 1e5)
+    max_dispersers  | (1e1, 1e4)
 end
 # Constant growth
 @relimits struct ExactLogisticGrowth
@@ -19,8 +19,8 @@ end
     carrycap | false
 end
 # Kernel
-@relimits struct ExponentialKernel
-    λ | (0.0, 0.1)
+@reflattenable struct ExponentialKernel
+    λ | false
 end
 # Alee
 @relimits struct AlleeExtinction
@@ -86,8 +86,8 @@ setup_comparison_rulesets(datafile) = begin
     constant_growth = ExactLogisticGrowth(intrinsicrate=floatconvert(0.1)d^-1, carrycap=carrycap)
 
     # Local dispersal
-    λ = floatconvert(0.05)
-    radius = 3
+    λ = floatconvert(0.0125)
+    radius = 1
     sze = 2radius + 1
 
     # buildhood(dm) = begin
@@ -107,7 +107,7 @@ setup_comparison_rulesets(datafile) = begin
     # heatmap(log.(buildhood(AreaToArea(10))))
 
     # heatmap(log.(hood.kernel .* carrycap))
-    dm = CentroidToCentroid()
+    # dm = CentroidToCentroid()
     dm = AreaToArea(30)
     @time hood = DispersalKernel{radius}(;kernel=zeros(FloatType, radius, radius), cellsize=cellsize,
                                    formulation=ExponentialKernel(λ), distancemethod=dm)
@@ -115,7 +115,7 @@ setup_comparison_rulesets(datafile) = begin
     display(hood.kernel * carrycap)
 
     # Allee effects
-    minfounders = floatconvert(2.0)
+    minfounders = floatconvert(10.0)
     allee = AlleeExtinction(minfounders=minfounders)
 
     # Mask

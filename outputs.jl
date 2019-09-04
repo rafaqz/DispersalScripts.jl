@@ -42,14 +42,22 @@ maskcolor = RGB24(0.53, 0.53, 0.53)
 processor = ColorRegionFit(objective, truescheme, falsescheme, 
                            truezerocolor, falsezerocolor, maskcolor)
 
+rulesetkey = :full
+rulesetkey = :noclimate
+rulesetkey = :nolocal
+rulesetkey = :noallee
+rulesetkey = :nohuman
+ruleset = sim_rulesets[rulesetkey]
+ruleset.rules = reconstruct(ruleset.rules, Optim.minimizer(optimresults[rulesetkey]))
+
 using CellularAutomataGtk
 output = GtkOutput(init .* 0; fps=6, showfps=20, store=true, processor=processor)
-output.fps = 60 
+output.fps = 10
 output.running = false
 output.processor = processor
-@time sim!(output, ruleset; tstop=68)
+@time sim!(output, ruleset; tstop=103)
 
-@time sim!(output, ruleset; tstop=68, nreplicates=40)
+@time sim!(output, ruleset; tstop=68, nreplicates=10)
 
 
 using CellularAutomataWeb#, Blink
