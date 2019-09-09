@@ -1,11 +1,24 @@
 output = ArrayOutput(init, tstop)
 @time sim!(output, ruleset; tstop=68)
 
+# REPL
 using Crayons
 output = REPLOutput(init; style=Block(), fps=10, color=Crayon(foreground=:red, background=:white, bold=true))
 output = REPLOutput(init; style=Braile(), fps=5, color=:white, store=false)
 output = REPLOutput(init; style=Braile(), fps=10, color=:red, store=false)
 
+# Region colorschemes for GTK/Web
+
+truescheme = Greyscale(max=0.4, min=0.0)
+falsescheme = ColorSchemes.RdGy_5
+falsescheme = ColorSchemes.autumn1
+falsezerocolor = RGB24(0.80, .85, .27)
+truezerocolor = RGB24(1.0, 1.0, 1.0)
+maskcolor = RGB24(0.53, 0.53, 0.53)
+processor = ColorRegionFit(objective, truescheme, falsescheme, 
+                           truezerocolor, falsezerocolor, maskcolor)
+
+# Regular colorschemes for GTK/Web
 
 scheme = Greyscale()
 scheme = ColorSchemes.spring
@@ -33,20 +46,13 @@ zerocolor = RGB24(0.7)
 maskcolor = RGB24(0.0)
 processor = ColorProcessor(scheme, zerocolor, maskcolor)
 
-truescheme = Greyscale(max=0.4, min=0.0)
-falsescheme = ColorSchemes.RdGy_5
-falsescheme = ColorSchemes.autumn1
-falsezerocolor = RGB24(0.80, .85, .27)
-truezerocolor = RGB24(1.0, 1.0, 1.0)
-maskcolor = RGB24(0.53, 0.53, 0.53)
-processor = ColorRegionFit(objective, truescheme, falsescheme, 
-                           truezerocolor, falsezerocolor, maskcolor)
 
+# Rebuild selected ruleset wiht optimised params
 rulesetkey = :full
-rulesetkey = :noclimate
-rulesetkey = :nolocal
-rulesetkey = :noallee
-rulesetkey = :nohuman
+# rulesetkey = :noclimate
+# rulesetkey = :nolocal
+# rulesetkey = :noallee
+# rulesetkey = :nohuman
 ruleset = sim_rulesets[rulesetkey]
 ruleset.rules = reconstruct(ruleset.rules, Optim.minimizer(optimresults[rulesetkey]))
 
@@ -57,18 +63,19 @@ output.running = false
 output.processor = processor
 @time sim!(output, ruleset; tstop=103)
 
+# Layered replicates
 @time sim!(output, ruleset; tstop=68, nreplicates=10)
 
 
-using CellularAutomataWeb#, Blink
-output = BlinkOutput(init, ruleset; fps=8, store=true, processor=processor, slider_throttle=1.0)#,  extrainit=extrainit,  #summaries=(costs,),
-output.interface.running = false
+using CellularAutomataWeb
+# Run in Juno or a Jupyter notebook
+output = WebOutput(init, ruleset; fps=8, store=true, processor=processor, slider_throttle=1.0)#,  extrainit=extrainit,  #summaries=(costs,),
+display(output)
+
+# Electron window (currently broken)
+# output = BlinkOutput(init, ruleset; fps=8, store=true, processor=processor, slider_throttle=1.0)#,  extrainit=extrainit,  #summaries=(costs,),
+# output.interface.running = false
 # Blink.AtomShell.@dot output.window webContents.setZoomFactor(1.0)
-# output = Cellular.MuxServer(init, model; port=8000)
-# output = WebOutput(init, ruleset; fps=8, store=true, processor=processor, slider_throttle=1.0)#,  extrainit=extrainit,  #summaries=(costs,),
-# display(output)
 
 
 savegif("sim.gif", output, ruleset; fps=6)
-
-
