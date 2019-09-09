@@ -21,9 +21,9 @@ lossfunc = ZeroOneLoss()
 # @save "lowlambda_highres.jld2" res
 rulesetkey = :full
 ruleset = sim_rulesets[rulesetkey]
-ruleset.rules = reconstruct(ruleset.rules, Optim.minimizer(optimresults[rulesetkey]))
 # @load "optimresults2019-08-21T19:27:27.351 .jld2" optimresults
 # optimresults
+# ruleset.rules = reconstruct(ruleset.rules, Optim.minimizer(optimresults[rulesetkey]))
 # @time pars = flatten(ruleset.rules)
 # parametriser = Parametriser(ruleset, output, objective, transformfunc, loss, ngroups, groupsize, tstop, threading)
 # @time parametriser(pars)
@@ -40,7 +40,7 @@ optimresults = @LArray Vector(undef, length(sim_rulesets)) keys(sim_rulesets)
 # threading = Dispersal.SingleCoreReplicates()
 threading = Dispersal.ThreadedReplicates()
 groupsize = 40
-ngroups = 3
+ngroups = 5
 iterations = 1000
 
 output.running = false
@@ -69,7 +69,7 @@ for rulesetkey in keys(sim_rulesets)
 end
 
 
-# @save "optimresults1.jld2" optimresults
+@save "optimresults_$now.jld2" optimresults
 @load "optimresults_latest.jld2" optimresults
 # optimresults[:full] = res
 # Parameter estimates datafram
@@ -125,7 +125,7 @@ datafile = "spread_inputs_EU_cleaned.h5"
 # datafile = "spread_inputs_Aus_SWD.h5"
 # datafile = "spread_inputs_Aus_VLM.h5"
 sim_rulesets, init, tstop, objective, output = setup_comparison_rulesets(datafile)
-rulesetkey = :full
+rulesetkey = :nohuman#:full
 ruleset = sim_rulesets[rulesetkey]
 ruleset.rules = reconstruct(ruleset.rules, Optim.minimizer(optimresults[rulesetkey]))
 

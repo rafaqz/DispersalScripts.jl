@@ -3,11 +3,16 @@ using Unitful: °C, K, hr, d
 using GeoData: Time
 
 series = SMAPseries("smap"; lazyview=(Lon<|Between(-125, -75), Lat(150:480)))
-series = series[Time<|Between(DateTime(2016), DateTime(2018))]
+series = series[Between(Date(2016), Date(2018))]
 
-month = 365.25d/12
-timestep = 1d
-sumsteps = month
+month = Second(356.25*24*60*60/12) 
+period = month
+sampleperiod = Day(1)
+
+t = DateTime(2012) + month
+
+round(t, Day(1))
+
 
 # parameters
 p25 = 3.377850e-01
